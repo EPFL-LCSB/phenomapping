@@ -1,4 +1,4 @@
-function solverOK = addCplexPath(cplexPath)
+function [solverOK,path_found] = addCplexPath(cplexPath)
 
 if nargin < 1
     cplexPath = [];
@@ -10,7 +10,6 @@ end
 
 addpath(genpath(cplexPath))
 [path_found,~] = which('cplex');
-sprintf(path_found)
 solverOK = ~isempty(path_found);
 
 if ~solverOK

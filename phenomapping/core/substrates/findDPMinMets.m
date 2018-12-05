@@ -28,7 +28,7 @@ function [DPs, model, objectives] = findDPMinMets(model, NumAlt, indUSE, time, t
 %    objectives:      Exchange/Drain reactions
 %
 % .. Author:
-% Anush Chiappino 2015
+% Anush Chiappino 2017
 % 
 
 if (nargin < 2)
@@ -99,7 +99,7 @@ end
 if (NumSols == NumAlt)
     sol = optimizeThermoModel(model,0,'cplex',time);
     if ~isempty(sol.x) || (sol.val>0)
-        warning('You need to generate more alternative solutions. Check SOP_issues_imm.m');
+        warning('You need to generate more alternative solutions. Check tutorial_issues.m');
     end
 end
 end

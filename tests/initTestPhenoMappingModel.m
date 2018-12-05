@@ -1,4 +1,5 @@
-function [model, checkList, tagReady] = initTestPhenoMappingModel(modeli)
+function [model, checkList, tagReady] = initTestPhenoMappingModel(modeli, ...
+    cplexPath)
 % Initial test of the model to check if it is ready for a PhenoMapping
 % analysis
 %
@@ -19,6 +20,10 @@ function [model, checkList, tagReady] = initTestPhenoMappingModel(modeli)
 %
 % Anush Chiappino-Pepe 2018
 %
+
+if (nargin < 2)
+    cplexPath = '/phenomapping/ext/solvers/IBM/ILOG';
+end
 
 tagReady = 1;
 model = modeli;
@@ -50,11 +55,12 @@ else
     tagReady = 0;
 end
 
+fprintf('3: reducing bigM to improve performance of MILP\n');
 indfu = getAllVar(model,{'FU'});
 indbu = getAllVar(model,{'BU'});
 induf = getAllCons(model,{'UF'});
 indur = getAllCons(model,{'UR'});
-if model.A(induf(1),indfu(1)) > -51
+if full(model.A(induf(1),indfu(1))) < -51
     if length(induf)==length(indur)
         for i = 1:length(induf)
             model.A(induf(i),indfu(i)) = -50;
@@ -66,6 +72,17 @@ else
     checkList{4} = 'ok: capacity constrain of fluxes in TFA problem is low and might have been predefined like this by the user';
 end
 
+% PhenoMapping was developed to work with the solver CPLEX. As a 
+% first step we hence check that you have CPLEX installed. In future
+% releases, this repository will work with other solvers like gurobi.
+fprintf('4: setting up cplex as the solver\n');
+[solverOK,path_found] = addCplexPath(cplexPath);
+if solverOK
+    checkList{5} = strcat('ok: solver cplex path found ',path_found);
+else
+    checkList{5} = 'issue: solver cplex not found. Provide a valid path for cplex';
+end
+
 if isequal(model,modeli) && tagReady
     fprintf('all checks passed: the output model is the same as the input model. The model is ready for phenomapping\n');
 elseif ~isequal(model,modeli) && tagReady
@@ -73,5 +90,4 @@ elseif ~isequal(model,modeli) && tagReady
 else
     fprintf('some checks failed: the output model needs manual curation for phenomapping - details in checkList\n');
 end
-
 end

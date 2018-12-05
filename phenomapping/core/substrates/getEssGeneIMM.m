@@ -7,8 +7,8 @@ function [essIMM, solOpt, models] = getEssGeneIMM(model, DPs, ...
 %    [essIMM, solOpt, models] = getEssGeneIMM(model, DPs, modelmilp, method, essThr, essGenesFBA, flagUpt, jointIMM, filename)
 %
 % INPUT:
-%    model:           TFA model structure (preferably the "modelpre" output
-%                     from analysisIMM.m
+%    model:           TFA model structure (the "model" input to 
+%                     analysisIMM.m)
 %    DPs:             Directionality profile matrix with alternatives in
 %                     each column
 %    modelmilp:       TFA model with MILP structure for IMM/IMS analysis

@@ -13,8 +13,8 @@ function [subsToGenes, essIMMaddToIRM] = ...
 %    essIMM:          Essentiality per IMM as output of getEssentialityIMM.m                  
 %    DPs:             Directionality profile matrix with alternatives in
 %                     each column
-%    model:           TFA model structure (preferably the "modelpre" output
-%                     from analysisIMM.m
+%    model:           TFA model structure (the "model" input to 
+%                     analysisIMM.m)
 %
 %
 % OPTIONAL INPUTS:

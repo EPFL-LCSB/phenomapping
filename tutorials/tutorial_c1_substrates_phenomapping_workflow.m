@@ -1,14 +1,11 @@
 % Example script for PhenoMapping analysis based on substrate availability
 % (uptakes: with the in silico minimal media analysis (IMM), and secretion: 
 %  with the in silico minimal secretion analysis (IMS))
-cd ..
+cd(pathToPhenoMapping)
 %% inputs
-% model should have been loaded for analysis - if it was not uncomment this
-% and provide the correct model path and name (this is the example case)
-% modeldescription = 'iPbe liver';
-% modelPath = '/phenomapping/models/pbe/tipbe2_liver.mat';
-% load(modelPath)
-% model = tipbe_liver;
+% the model should have been loaded for this analysis and gone through the 
+% initTestPhenoMappingModel test (as described in the 
+% master_tutorial_phenomapping_workflow.m)
 
 % sugested inputs for imm analysis
 flagUpt = 1; % true for analysis of IMM, false for analysis of IMS
@@ -17,9 +14,6 @@ maxObj = 10; % upper bound in growth (leave unconstrained)
 NumAlt = 1;%5000; % number of alternatives
 drainsForiMM = {}; % apply IMM in all drains
 tagMin = 1; % additional constrain to avoid generating suboptimal solutions
-rxnNoThermo = []; % empty to keep analysis on structure of the model as it is
-ReactionDB = load('ext/matTFA/thermoDatabases/thermo_data.mat');
-ReactionDB = ReactionDB.DB_AlbertyUpdate;
 metabData = []; % no metabolomics data
 time = []; % time limit for optimization in seconds, if empty we do not set a time limit
 filename = strcat(modeldescription,'_imm');
@@ -28,8 +22,8 @@ essThr = 0.1; % essentiality threshold
 %% IMM analysis
 
 % prepare model for IMM analysis and define milp problem
-[modelmilp, drains, modelpre] = analysisIMM(model, flagUpt, minObj, maxObj, ...
-    drainsForiMM, rxnNoThermo, ReactionDB, metabData);
+[modelmilp, drains] = analysisIMM(model, flagUpt, minObj, maxObj, ...
+    drainsForiMM, metabData);
 
 % get alternative solutions
 [DPs, model4DP] = findDPMinMets(modelmilp, NumAlt, modelmilp.indUSE, ...
@@ -46,17 +40,17 @@ writeData(strcat('tmpresults/',filename,'.csv'),immOutput.summary,...
 
 
 %% Get essentiality at the rich medium
-grRatioGeneTFA = thermoSingleGeneDeletion(modelpre, 'TFA', modelpre.genes, 0, 0, 0, essThr, modelpre.indNF);
+grRatioGeneTFA = thermoSingleGeneDeletion(model, 'TFA', model.genes, 0, 0, 0, essThr, model.indNF);
 grRatioGeneTFA(isnan(grRatioGeneTFA)) = 0; %by default NaN is considered an essential KO
-essIRMtfa = modelpre.genes(grRatioGeneTFA<essThr);
+essIRMtfa = model.genes(grRatioGeneTFA<essThr);
 
 %% Option 1: get essentiality at the IMMs and link it to the substrates missing at each IMM
-[essIMMfba, solOptimmfba] = getEssGeneIMM(modelpre, DPs, modelmilp, 'FBA', essThr, [], flagUpt, [], filename);
-[essIMMtfa, solOptimmtfa] = getEssGeneIMM(modelpre, DPs, modelmilp, 'TFA', essThr, essIMMfba, flagUpt, [], filename);
+[essIMMfba, solOptimmfba] = getEssGeneIMM(model, DPs, modelmilp, 'FBA', essThr, [], flagUpt, [], filename);
+[essIMMtfa, solOptimmtfa] = getEssGeneIMM(model, DPs, modelmilp, 'TFA', essThr, essIMMfba, flagUpt, [], filename);
 essIMMfbatfa = getOverlapSets(essIMMfba,essIMMtfa);
 save(strcat('tmpresults/',filename,'_ess_final.mat'));
 
-[subsToGenes, essIMMaddToIRM] = linkEssGeneIMM2Subs(modelmilp, essIMMfbatfa, DPs, modelpre, essThr, essIRMtfa, NumAlt, time, [], filename);
+[subsToGenes, essIMMaddToIRM] = linkEssGeneIMM2Subs(modelmilp, essIMMfbatfa, DPs, model, essThr, essIRMtfa, NumAlt, time, [], filename);
 save(strcat('tmpresults/',filename,'_ess_sub_final.mat'));
 
 % Extract info about substrates linked to essentiality of the joint IMMs
@@ -69,8 +63,8 @@ exportIMM2ess2subInfo(essIMMaddToIRM,subsToGenes,strcat(filename,'_ess_sub_final
 % extract information from IMMs
 jointIMM = immOutput.Mets(immOutput.StatsMets>0.1,:);
 
-[essJointIMMtfa, solOptjimmtfa] = getEssGeneIMM(modelpre, DPs, modelmilp, 'TFA', essThr, {essIRMtfa}, flagUpt, jointIMM(:,1), filename);
-[subsToGenesJoint, essIMMaddToIRMJoint] = linkEssGeneIMM2Subs(modelmilp, essJointIMMtfa, DPs, modelpre, essThr, essIRMtfa, NumAlt, time, jointIMM(:,1), filename);
+[essJointIMMtfa, solOptjimmtfa] = getEssGeneIMM(model, DPs, modelmilp, 'TFA', essThr, {essIRMtfa}, flagUpt, jointIMM(:,1), filename);
+[subsToGenesJoint, essIMMaddToIRMJoint] = linkEssGeneIMM2Subs(modelmilp, essJointIMMtfa, DPs, model, essThr, essIRMtfa, NumAlt, time, jointIMM(:,1), filename);
 save(strcat('tmpresults/',filename,'_ess_subjoint_final.mat'));
 
 % Extract info about substrates linked to essentiality of the joint IMMs

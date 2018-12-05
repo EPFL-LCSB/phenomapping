@@ -4,9 +4,18 @@ clc
 close all
 
 % work from first folder of phenomapping as the starting path
-pathToPhenoMapping = '/Users/Anush/GIT_Folders/phenomapping'; %adapt here to your path
+pathToPhenoMapping = '/Users/Anush/GIT_Folders/phenomapping'; %provide path to phenomapping repository
+pathTomatTFA = '/Users/Anush/GIT_Folders/matTFA'; % provide path to matTFA repository
+pathToTEXFBA = '/Users/Anush/GIT_Folders/texfba'; % provide path to TEXFBA repository
+cplexPath = '/Users/Anush/Applications/IBM/ILOG/CPLEX_Studio1271'; % provide path to cplex
+
 addpath(genpath(pathToPhenoMapping));
+addpath(genpath(pathTomatTFA));
+addpath(genpath(pathToTEXFBA));
 cd(pathToPhenoMapping)
+
+tagThermo = 1;
+ReactionDBpath = '/Users/Anush/GIT_Folders/matTFA/thermoDatabases/thermo_data.mat';
 
 % Check the structure of your model and prepare it for a
 % PhenoMapping analysis
@@ -14,7 +23,7 @@ modeldescription = 'iPbe liver';
 modelPath = 'models/pbe/tipbe2_liver.mat';
 load(modelPath)
 model = tipbe_liver;
-[model, checkList, tagReady] = initTestPhenoMappingModel(model);
+[model, checkList, tagReady] = initTestPhenoMappingModel(model,cplexPath,ReactionDBpath);
 
 %% PhenoMapping analysis for organism specific information in the GEM
 % Step 1: Map essentiality to enzymatic irreversibilities defined as adhoc 

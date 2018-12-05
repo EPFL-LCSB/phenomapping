@@ -12,9 +12,9 @@ function phenotype = getPhenotype(listGenes,lifeStage,PlasmoSpecie,pathToData)
 % OPTIONAL INPUTS:
 %    lifeStage:       Either 'blood' or 'liver' (Default = 'blood')
 %    PlasmoSpecie:    Either 'pbe' or 'pfa' (Default = 'pbe')
-%    pathToData:      Cell array with path(s) to phenotype(s) for a life 
+%    pathToData:      Cell array with path(s) to phenotype(s) for a life
 %                     stage of the organism of study (default = empty / get
-%                     data for P. berghei blood and liver stages saved in 
+%                     data for P. berghei blood and liver stages saved in
 %                     phenomapping/data/pbe). NOTE: new phenotypes should
 %                     be saved in a cell called "phenotypes".
 %
@@ -34,29 +34,47 @@ if (nargin < 4)
     pathToData = [];
 end
 
+curdir = cd;
+
 listGenes = strrep(listGenes,'putative_','');
 listGenes = strtok(listGenes,'.');
 
-if isempty(pathToData)
-    if strcmp(PlasmoSpecie,'pbe')
-        if strcmp(lifeStage,'blood')
-            mm = load('data/pbe/pbe_phenotypes_blood_Nov16.mat');
-            spPheno = mm.phenotypes;
-            clear mm
-        elseif strcmp(lifeStage,'liver')
-            mm = load('data/pbe/pbe_phenotypes_liver_Jul18.mat');
-            spPheno = mm.phenotypes;
-            clear mm
+if strcmp(PlasmoSpecie,'pbe')
+    if strcmp(lifeStage,'blood')
+        pathToData = strcat(curdir,'/data/pbe/pbe_phenotypes_blood_Nov16.mat');
+        if ~exist(pathToData,'file') == 2
+            pathToData = [];
+        end
+        while isempty(pathToData)
+            pathToData = input('Please provide the path to the blood phenotypes of P. berghei and press enter\n... ','s');
+        end
+    elseif strcmp(lifeStage,'liver')
+        pathToData = strcat(curdir,'/data/pbe/pbe_phenotypes_liver_Jul18.mat');
+        if ~exist(pathToData,'file') == 2
+            pathToData = [];
+        end
+        while isempty(pathToData)
+            pathToData = input('Please provide the path to the liver phenotypes of P. berghei and press enter\n... ','s');
         end
     end
 else
-    mm = load(pathToData);
-    spPheno = mm.phenotypes;
-    clear mm
+    while isempty(pathToData)
+        pathToData = input('Please provide the path to the phenotypes of interest and press enter\n... ','s');
+    end
 end
 
+mm = load(pathToData);
+if ~isfield(mm,'phenotypes')
+    error('the phenotypes should be saved in a two-column cell called "phenotypes": the first column are the geneIDs and the second column the phenotypes')
+end
+spPheno = mm.phenotypes;
+clear mm
+
 phenotype = cell(length(listGenes), size(spPheno,2));
-[y,r]=ismember(listGenes,spPheno(:,1));
+[y,r] = ismember(listGenes,spPheno(:,1));
+if ~any(y)
+    error('the phenotypes should be saved in a two-column cell called "phenotypes": the first column are the geneIDs and the second column the phenotypes')
+end
 phenotype(y,:) = spPheno(r(y),:);
 phenotype(~y,:) = {'no info'};
 end

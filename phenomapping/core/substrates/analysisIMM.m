@@ -1,5 +1,5 @@
-function [model, drains, modelpre] = analysisIMM(model, flagUpt, minObj, ...
-    maxObj, drainsForiMM, rxnNoThermo, ReactionDB, metabData)
+function [model, drains] = analysisIMM(model, flagUpt, minObj, ...
+    maxObj, drainsForiMM, metabData)
 % Identifies In silico Minimal Media (IMM) or In silico Minimal Secretion
 % (IMS) to achieve a given objective
 %
@@ -17,10 +17,6 @@ function [model, drains, modelpre] = analysisIMM(model, flagUpt, minObj, ...
 %    minObj:          Objective lower bound (default = 90% optimal value)
 %    maxObj:          Objective upper bound (default = optimal value)
 %    drainsForiMM:    Drains or transports to minimize (default = all drains)
-%    rxnNoThermo:     List of rxns for which no thermo constraints should 
-%                     be applied (default = all rxns -- equivalent to FBA)
-%    ReactionDB:      Database with all the thermodynamic information from
-%                     Alberty (default = DB_AlbertyUpdate.mat in matTFA)
 %    metabData:       Metabolomics data (default = empty)
 % 
 %
@@ -30,11 +26,11 @@ function [model, drains, modelpre] = analysisIMM(model, flagUpt, minObj, ...
 %    modelpre:        Model ready for MILP formulation
 %
 % .. Author:
-% Meric Ataman 2014
-% Anush Chiappino-Pepe 2017 : minimal secretion and refinement
+% Meric Ataman 2014 : initial problem formulation
+% Anush Chiappino-Pepe 2017 : minimal secretion and refinement of function
 % 
 
-solWT=optimizeThermoModel(model);
+solWT = optimizeThermoModel(model);
 
 if (nargin < 2)
     flagUpt = 1;
@@ -49,14 +45,6 @@ if (nargin < 5)
     drainsForiMM = {};
 end
 if (nargin < 6)
-    % default = FBA analysis
-    rxnNoThermo = model.rxns;
-end
-if (nargin < 7)
-    ReactionDB = load('/phenomapping/ext/matTFA/thermoDatabases/thermo_data.mat');
-    ReactionDB = ReactionDB.DB_AlbertyUpdate;
-end
-if (nargin < 8)
     metabData = [];
 end
 
@@ -82,22 +70,12 @@ else
     drains = [strcat('F_', drains) drainMets]; % get secretions
 end
 if flagChange
-    fprintf('some drains had to be redefined -> reconvert to thermo\n');
-    model = prepModelforTFA(model, ReactionDB, model.CompartmentData);
-end
-if (flagChange || (length(rxnNoThermo) == length(model.rxns)))
-    fprintf('generating TFA structure\n');
-    model = convToTFA(model, ReactionDB, rxnNoThermo);
-end
-model.indNF = getAllVar(model,{'NF'});
-if isempty(model.indNF)
-    model = addNetFluxVariables(model);
-    model.indNF = getAllVar(model,{'NF'});
+    fprintf('some drains need to be redefined -> reconvert to thermo\n');
+    error('please run initTestPhenoMappingModel before calling this function')
 end
 if ~isempty(metabData)
     model = loadConstraints(model,metabData);
 end
-modelpre = model;
 
 model.var_lb(model.f==1) = minObj;
 model.var_ub(model.f==1) = maxObj;

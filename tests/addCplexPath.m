@@ -1,6 +1,6 @@
 function [solverOK,path_found] = addCplexPath(cplexPath)
 
-if nargin < 1
+if (nargin < 1)
     cplexPath = [];
 end
 

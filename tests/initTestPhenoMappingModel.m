@@ -90,4 +90,7 @@ elseif ~isequal(model,modeli) && tagReady
 else
     fprintf('some checks failed: the output model needs manual curation for phenomapping - details in checkList\n');
 end
+
+if ~isdir('tmpresults')
+    mkdir('tmpresults')
 end

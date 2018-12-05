@@ -59,7 +59,7 @@ save(strcat('tmpresults/',filename,'_ess_final.mat'));
 save(strcat('tmpresults/',filename,'_ess_sub_final.mat'));
 
 % Extract info about substrates linked to essentiality of the joint IMMs
-exportIMM2ess2subInfo(essIMMaddToIRMJoint,subsToGenesJoint,strcat(filename,'_ess_sub_final'));
+exportIMM2ess2subInfo(essIMMaddToIRM,subsToGenes,strcat(filename,'_ess_sub_final'));
 
 
 %% Option 2: get essentiality at the jointIMM (here you might add or take 

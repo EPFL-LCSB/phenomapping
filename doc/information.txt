@@ -1,0 +1,7 @@
+# PhenoMapping depends on three external repositories: 
+# cobratoolbox, matTFA and texFBA
+# The functions of the external repositories used in PhenoMapping 
+# (as published in November 2018) are saved in the folder "ext"
+
+# PhenoMapping was developed and used with MATLAB R2016a
+# using the solver CPLEX 1271

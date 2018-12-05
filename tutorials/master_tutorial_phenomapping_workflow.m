@@ -11,7 +11,7 @@ cd(pathToPhenoMapping)
 % Check the structure of your model and prepare it for a
 % PhenoMapping analysis
 modeldescription = 'iPbe liver';
-modelPath = '/phenomapping/models/pbe/tipbe2_liver.mat';
+modelPath = 'models/pbe/tipbe2_liver.mat';
 load(modelPath)
 model = tipbe_liver;
 [model, checkList, tagReady] = initTestPhenoMappingModel(model);

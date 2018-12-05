@@ -4,6 +4,7 @@
 cd ..
 %% inputs
 % model should have been loaded for analysis - if it was not uncomment this
+% and provide the correct model path and name (this is the example case)
 % modeldescription = 'iPbe liver';
 % modelPath = '/phenomapping/models/pbe/tipbe2_liver.mat';
 % load(modelPath)

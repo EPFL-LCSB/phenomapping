@@ -82,11 +82,11 @@ else
     drains = [strcat('F_', drains) drainMets]; % get secretions
 end
 if flagChange
-    fprintf('some drains had to be redefined -> reconvert to thermo: for this it is recommended to download the matTFA repository and not depend on the limited functions provided in the folder ext of this repository\n');
+    fprintf('some drains had to be redefined -> reconvert to thermo\n');
     model = prepModelforTFA(model, ReactionDB, model.CompartmentData);
 end
 if (flagChange || (length(rxnNoThermo) == length(model.rxns)))
-    fprintf('generating TFA structure: for this it is recommended to download the matTFA repository and not depend on the limited functions provided in the folder ext of this repository\n');
+    fprintf('generating TFA structure\n');
     model = convToTFA(model, ReactionDB, rxnNoThermo);
 end
 model.indNF = getAllVar(model,{'NF'});

@@ -1,17 +1,14 @@
-% Example script for PhenoMapping analysis based on metabolite levels
-clear
-clc
-close all
+% Example script for PhenoMapping analysis based on metabolite
+% concentrations
 
-% work from first folder of phenomapping as the starting path
-pathToPhenoMapping = '/Users/Anush/GIT_Folders/phenomapping';
-cd(pathToPhenoMapping)
-
+cd ..
 %% inputs
-% load model for analysis
-load('/phenomapping/models/pbe/tipbe2_liver.mat')
-model = tipbe_liver;
-modeldescription = 'iPbe';
+% model should have been loaded for analysis - if it was not uncomment this
+% and provide the correct model path and name (this is the example case)
+% modeldescription = 'iPbe liver';
+% modelPath = '/phenomapping/models/pbe/tipbe2_liver.mat';
+% load(modelPath)
+% model = tipbe_liver;
 
 % sugested inputs for imm analysis
 flagUpt = 1; % true for analysis of IMM, false for analysis of IMS
@@ -21,7 +18,7 @@ NumAlt = 1;%5000; % number of alternatives
 drainsForiMM = {}; % apply IMM in all drains
 tagMin = 1; % additional constrain to avoid generating suboptimal solutions
 rxnNoThermo = []; % empty to keep analysis on structure of the model as it is
-ReactionDB = load('/phenomapping/ext/matTFA/thermoDatabases/thermo_data.mat');
+ReactionDB = load('ext/matTFA/thermoDatabases/thermo_data.mat');
 ReactionDB = ReactionDB.DB_AlbertyUpdate;
 metabData = []; % no metabolomics data
 time = []; % time limit for optimization in seconds, if empty we do not set a time limit
@@ -63,7 +60,7 @@ save(strcat('tmpresults/',filename,'_ess_final.mat'));
 save(strcat('tmpresults/',filename,'_ess_sub_final.mat'));
 
 % Extract info about substrates linked to essentiality of the joint IMMs
-exportIMM2ess2subInfo(essIMMaddToIRMJoint,subsToGenesJoint,strcat(filename,'_ess_sub_final'));
+exportIMM2ess2subInfo(essIMMaddToIRM,subsToGenes,strcat(filename,'_ess_sub_final'));
 
 
 %% Option 2: get essentiality at the jointIMM (here you might add or take 

@@ -40,11 +40,11 @@ listGenes = strtok(listGenes,'.');
 if isempty(pathToData)
     if strcmp(PlasmoSpecie,'pbe')
         if strcmp(lifeStage,'blood')
-            mm = load('/phenomapping/data/pbe/pbe_phenotypes_blood_Nov16.mat');
+            mm = load('data/pbe/pbe_phenotypes_blood_Nov16.mat');
             spPheno = mm.phenotypes;
             clear mm
         elseif strcmp(lifeStage,'liver')
-            mm = load('/phenomapping/data/pbe/pbe_phenotypes_liver_Jul18.mat');
+            mm = load('data/pbe/pbe_phenotypes_liver_Jul18.mat');
             spPheno = mm.phenotypes;
             clear mm
         end

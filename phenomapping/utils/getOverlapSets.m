@@ -4,7 +4,7 @@ function [union, common, notCommon, num] = getOverlapSets(data1, data2)
 %
 % USAGE:
 %
-%       [common, notCommon, union, num] = getOverlapSets(data1, data2)
+%       [union, common, notCommon, num] = getOverlapSets(data1, data2)
 %
 % INPUTS:
 %    data1:           Data set 1 - row

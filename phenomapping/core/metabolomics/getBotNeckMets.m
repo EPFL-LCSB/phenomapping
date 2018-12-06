@@ -1,4 +1,5 @@
-function [bottleneckMets, modelnew] = getBotNeckMets(model, LCcons, grRate, NumAlt)
+function [bottleneckMets, modelnew, bottleneckMetNames] = getBotNeckMets ...
+    (model, LCcons, grRate, NumAlt, time, tagMax, filename)
 % Identify concentrations to relax to make model feasible
 %
 % USAGE:
@@ -12,6 +13,12 @@ function [bottleneckMets, modelnew] = getBotNeckMets(model, LCcons, grRate, NumA
 % OPTIONAL INPUTS:
 %    grRate:          min growth to achieve (default = 0.007)
 %    NumAlt:          Maximum number of alternatives to get (default = 1)
+%    time:            Time in sec after which simulation will be stopped
+%                     (default = empty / no time provided)
+%    tagMax:          True to generate alternative solution of minimal size
+%                     only. False to generate up to the number of
+%                     alternatives provided in NumAlt (default = false)
+%    filename:        Name used to save DPs (default = 'PhenoMappingDPMin')
 %
 % OUTPUTS:
 %    bottleneckMets:  Cell array with metabolites found in each alternative
@@ -26,6 +33,15 @@ if (nargin < 3)
 end
 if (nargin < 4)
     NumAlt = 100;
+end
+if (nargin < 5)
+    time = [];
+end
+if (nargin < 6)
+    tagMax = 0;
+end
+if (nargin < 7)
+    filename = 'PhenoMappingDPMin';
 end
 
 conc = LCcons(:,1);
@@ -84,8 +100,9 @@ end
 % minimization: try to implement all maxLC and minLC possible
 fprintf('getting alternative solutions\n');
 model.objtype = 1;
-bottleneckMets = cell(length(NumAlt),1);
-[cDPs, modelnew] = findAltConc(model, NumAlt, indLCUSE); % get alternative solutions
+bottleneckMets = cell(1,length(NumAlt));
+bottleneckMetNames = cell(1,length(NumAlt));
+[cDPs, modelnew] = findDPMin(model, NumAlt, indLCUSE, time, tagMax, filename); % get alternative solutions
 if isempty(cDPs)
     disp('no solution found');
 else
@@ -94,9 +111,9 @@ else
         if isempty(rxnsBFUSE)
             error('no solution was found')
         else
-            bottleneckMets{i,1} = strrep(rxnsBFUSE, strcat(intTag,'_LC_'), '');
-            [~, tmp] = ismember(bottleneckMets{i,1}, model.mets);
-            bottleneckMets{i,1}(:,2) = model.metNames(tmp);
+            bottleneckMets{1,i} = strrep(rxnsBFUSE, strcat(intTag,'_LC_'), '');
+            [~, tmp] = ismember(bottleneckMets{1,i}, model.mets);
+            bottleneckMetNames{1,i} = model.metNames(tmp);
         end
     end
 end

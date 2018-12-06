@@ -1,25 +1,25 @@
-function model = recoverModel4DPIMM(model4DP, DPs)
+function model = recoverModel4DPMax(modelmilp, DPs)
 % Integrate integer cuts into model from DPs matrix (needed if matlab
-% crashes)
+% crashes) for a maximization problem
 %
 % USAGE:
 %
-%    model = recoverModel4DPIMM(model4DP, DPs)
+%    model = recoverModel4DP(modelmilp, DPs)
 %
 % INPUT:
-%    model4DP:    TFA model with MILP structure for IMM analysis
+%    model4DP:    TFA model with MILP structure for a maximization problem
 %    DPs:         Directionality profile matrix with alternatives in
-%                 each column from IMM analysis 
+%                 each column from the problem of study 
 %
 % OUTPUTS:
-%    model:       TFA model with MILP structure for IMM analysis and
-%                 integet cuts integrated
+%    model:       TFA model with MILP structure for a maximization problem 
+%                 and integet cuts integrated
 %
 % .. Author:
-% Meri? Ataman 2016
-% Anush Chiappino-Pepe 2017
+% Meric Ataman & Anush Chiappino-Pepe 2017
+% 
 
-model = model4DP;
+model = modelmilp;
 intTag = {'BFUSE'};
 indUSE = getAllVar(model,intTag);
 

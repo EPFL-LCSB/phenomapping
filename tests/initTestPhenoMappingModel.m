@@ -1,6 +1,6 @@
 function [model, checkList, tagReady] = initTestPhenoMappingModel(modeli, ...
-    cplexPath, ReactionDBpath, tagThermo, rxnNoThermo)
-% Initial test of the model to check if it is ready for a PhenoMapping
+    cplexPath, ReactionDBpath, tagThermo, rxnNoThermo, pathToSave)
+% Initial check list to verify the model is ready for a PhenoMapping
 % analysis
 %
 % USAGE:
@@ -43,6 +43,9 @@ end
 if (nargin < 5)
     rxnNoThermo = [];
 end
+if (nargin < 6)
+    pathToSave = 'tmpresults/';
+end
 
 tagReady = 1;
 model = modeli;
@@ -66,9 +69,13 @@ end
 
 % check the model structure required for thermo conversion
 fprintf('2: checking model structure\n');
-if tagThermo && (~isfield(model,'metCompSymbol') || ...
-        ~isfield(model,'metSEEDID') || ~isfield(model,'CompartmentData'))
-    warning('the model does not contain the fields metCompSymbol, metSEEDID, or/and CompartmentData required in matTFA for conversion to thermo. Hence it wont be converted to thermo')
+if ~isfield(model,'metCompSymbol')
+    warning('the model does not contain the field metCompSymbol. The compartments will be searched automatically')
+    model = addMetCompSymbol(model);
+end
+
+if tagThermo && (~isfield(model,'metSEEDID') || ~isfield(model,'CompartmentData'))
+    warning('the model does not contain the fields metSEEDID or/and CompartmentData required in matTFA for conversion to thermo. Hence it wont be converted to thermo')
     tagThermo = 0;
 end
 
@@ -185,6 +192,6 @@ end
 % create temporary results folder to save intermediate and final results: 
 % note that PhenoMapping will not upload the intermediate results 
 % - but you might need to use them if matlab crashes
-if ~isdir('tmpresults')
-    mkdir('tmpresults')
+if ~isdir(pathToSave(1:end-1))
+    mkdir(pathToSave(1:end-1))
 end

@@ -1,77 +1,105 @@
 % Example script for PhenoMapping analysis based on metabolite
-% concentrations
+% concentration
+cd(pathToPhenoMapping)
+%% Inputs
+% the model should have been loaded for this analysis and gone through the
+% initTestPhenoMappingModel test (as described in the
+% master_tutorial_phenomapping_workflow.m)
 
-cd ..
-%% inputs
-% model should have been loaded for analysis - if it was not uncomment this
-% and provide the correct model path and name (this is the example case)
-% modeldescription = 'iPbe liver';
-% modelPath = '/phenomapping/models/pbe/tipbe2_liver.mat';
-% load(modelPath)
-% model = tipbe_liver;
+% sugested inputs for PhenoMapping analysis of metabolite concentrations
+minObj = 0.05;          % minimal required growth
+NumAlt = 500;           % number of alternatives
+essThr = 0.1;           % essentiality threshold
+time = [];              % time limit for optimization in seconds, if empty we do not set a time limit
+tagMax = 0;             % additional constrain to avoid generating suboptimal solutions
 
-% sugested inputs for imm analysis
-flagUpt = 1; % true for analysis of IMM, false for analysis of IMS
-minObj = 0.05; % minimal required growth
-maxObj = 10; % upper bound in growth (leave unconstrained)
-NumAlt = 1;%5000; % number of alternatives
-drainsForiMM = {}; % apply IMM in all drains
-tagMin = 1; % additional constrain to avoid generating suboptimal solutions
-rxnNoThermo = []; % empty to keep analysis on structure of the model as it is
-ReactionDB = load('ext/matTFA/thermoDatabases/thermo_data.mat');
-ReactionDB = ReactionDB.DB_AlbertyUpdate;
-metabData = []; % no metabolomics data
-time = []; % time limit for optimization in seconds, if empty we do not set a time limit
-filename = strcat(modeldescription,'_imm');
-essThr = 0.1; % essentiality threshold
+filename = strcat(modeldescription,'_PhenoMappingMetabolomics');
+if ~exist('MetabPath','var')
+    MetabPath = [];
+end
+if ~exist('pathToPhenoData','var')
+    pathToPhenoData = [];
+end
+if ~exist('phenDesc','var')
+    phenDesc = pathToPhenoData;
+end
+if ~exist('pathToSave','var')
+    pathToSave = 'tmpresults/';
+end
 
-%% IMM analysis
+%% Load data
+if isempty(MetabPath)
+    while isempty(MetabPath)
+        MetabPath = input('Please provide the path to the metabolomics data (metNames+dataLC or LCcons) and press enter\n... ','s');
+    end
+end
+tmp = load(MetabPath);
+if isfield(tmp,'metNames') && isfield(tmp,'dataLC')
+    metNames = tmp.metNames;
+    dataLC = tmp.dataLC;
+elseif isfield(tmp,'LCcons')
+    LCcons = tmp.LCcons;
+else
+    error('the metabolomics data should be saved in a 3-column cell called "LCcons" or in two structures "metNames" and "dataLC" (see prepMetabCons for details)')
+end
 
-% prepare model for IMM analysis and define milp problem
-[modelmilp, drains, modelpre] = analysisIMM(model, flagUpt, minObj, maxObj, ...
-    drainsForiMM, rxnNoThermo, ReactionDB, metabData);
+%% Integration of metabolomics data into the model with MATTFA
+if exist('LCcons','var')
+    modelMetab = loadConstraints(model, LCcons);
+elseif (exist('metNames','var') && exist('dataLC','var'))
+    [modelMetab, LCcons] = prepMetabCons(model, metNames, dataLC(:,1), ...
+        dataLC(:,2));
+end
 
-% get alternative solutions
-[DPs, model4DP] = findDPMinMets(modelmilp, NumAlt, modelmilp.indUSE, ...
-    time, tagMin, filename);
-save(strcat('tmpresults/',filename,'_final.mat'));
+sol = optimizeThermoModel(modelMetab);
+if isempty(sol.val) || isnan(sol.val) || sol.val<minObj
+    warning('the available metabolomics data make your model infeasible. A bottleneck metabolite was selected and removed from the metabolomic set. It is suggested to manually check this issue in more detail. Please go to tutorial_issues.m')
+    bottleneckMetsBasis = getBotNeckMets(model, LCcons, minObj, 1, time);
+    LCconsinit = LCcons;
+    LCcons = LCcons(~ismember(LCcons(:,1),strcat('LC_',...
+        bottleneckMetsBasis{1,1})),:);
+    modelMetab = loadConstraints(model, LCcons);
+    sol = optimizeThermoModel(modelMetab);
+    if isempty(sol.val) || isnan(sol.val) || sol.val<minObj
+        error('Major issue with integration of metabolomics data. Please check this step carefully') % this should not happen...
+    end
+end
 
-% Extract info about composition of the IMMs
-[immOutput.StatsMets, immOutput.Mets, immOutput.drainClass, ...
-    immOutput.statsClass] = extractInfoIMMDPs(model4DP, DPs, model4DP.indUSE);
-immOutput.summary = [strrep(immOutput.Mets,',',''), immOutput.drainClass, num2cell(immOutput.StatsMets)];
-writeData(strcat('tmpresults/',filename,'.csv'),immOutput.summary,...
-    '%s\t%s\t%s\t%s\t%i', {'Drain ID', 'Met ID', 'Met name', ...
-    'Classification based on IMM', 'Appearance in IMM'}, '%s\t%s\t%s\t%s\t%s');
+%% Get essentiality with metabolomics data
+[~, grRateGeneTFAmetab] = thermoSingleGeneDeletion(modelMetab, 'TFA',...
+    modelMetab.genes, 0, 0, 0, essThr, modelMetab.indNF);
+grRateGeneTFAmetab(isnan(grRateGeneTFAmetab)) = 0; %by default NaN is considered an essential KO
+essTFAmetab = modelMetab.genes(grRateGeneTFAmetab < minObj);
 
+if ~exist('essTFAref','var') || isempty(essTFAref)
+    [~, grRateGeneTFA] = thermoSingleGeneDeletion(model, 'TFA',...
+        model.genes, 0, 0, 0, essThr, model.indNF);
+    grRateGeneTFA(isnan(grRateGeneTFA)) = 0; %by default NaN is considered an essential KO
+    essTFAref = model.genes(grRateGeneTFA < minObj);
+end
 
-%% Get essentiality at the rich medium
-grRatioGeneTFA = thermoSingleGeneDeletion(modelpre, 'TFA', modelpre.genes, 0, 0, 0, essThr, modelpre.indNF);
-grRatioGeneTFA(isnan(grRatioGeneTFA)) = 0; %by default NaN is considered an essential KO
-essIRMtfa = modelpre.genes(grRatioGeneTFA<essThr);
+addEssMetab = essTFAmetab(~ismember(essTFAmetab,essTFAref));
 
-%% Option 1: get essentiality at the IMMs and link it to the substrates missing at each IMM
-[essIMMfba, solOptimmfba] = getEssGeneIMM(modelpre, DPs, modelmilp, 'FBA', essThr, [], flagUpt, [], filename);
-[essIMMtfa, solOptimmtfa] = getEssGeneIMM(modelpre, DPs, modelmilp, 'TFA', essThr, essIMMfba, flagUpt, [], filename);
-essIMMfbatfa = getOverlapSets(essIMMfba,essIMMtfa);
-save(strcat('tmpresults/',filename,'_ess_final.mat'));
+%% Get bottleneck metabolites
+modelDel = cell(length(addEssMetab),1);
+hasEffect = cell(length(addEssMetab),1);
+constrRxnNames = cell(length(addEssMetab),1);
+bottleneckMets = cell(length(addEssMetab),1);
+bottleneckMetNames = cell(length(addEssMetab),1);
 
-[subsToGenes, essIMMaddToIRM] = linkEssGeneIMM2Subs(modelmilp, essIMMfbatfa, DPs, modelpre, essThr, essIRMtfa, NumAlt, time, [], filename);
-save(strcat('tmpresults/',filename,'_ess_sub_final.mat'));
+% Define milp problem and get bottleneck metabolites
+for i = 1:length(addEssMetab)
+    [modelDel{i}, hasEffect{i}, constrRxnNames{i}] = ...
+        thermoDeleteModelGenes(model, addEssMetab{i});
+    [bottleneckMets{i}, ~, bottleneckMetNames{i}] = getBotNeckMets(...
+        modelDel{i}, LCcons, minObj, NumAlt, time, tagMax, ...
+        strcat(pathToSave,filename));
+end
 
-% Extract info about substrates linked to essentiality of the joint IMMs
-exportIMM2ess2subInfo(essIMMaddToIRM,subsToGenes,strcat(filename,'_ess_sub_final'));
+% Extract info: metabolite concentrations linked to essentiality
+exportPhenoMappingInfo(addEssMetab, bottleneckMets, 'Metabolites',...
+    pathToPhenoData, phenDesc, strcat(pathToSave,filename,'_metID'));
+exportPhenoMappingInfo(addEssMetab, bottleneckMetNames, 'Metabolites',...
+    pathToPhenoData, phenDesc, strcat(pathToSave,filename,'_metNames'));
 
-
-%% Option 2: get essentiality at the jointIMM (here you might add or take 
-% out substrates based on you knowledge on the uptakes of your organism at 
-% the life-stage of study) and link it to the substrates missing at each IMM
-% extract information from IMMs
-jointIMM = immOutput.Mets(immOutput.StatsMets>0.1,:);
-
-[essJointIMMtfa, solOptjimmtfa] = getEssGeneIMM(modelpre, DPs, modelmilp, 'TFA', essThr, {essIRMtfa}, flagUpt, jointIMM(:,1), filename);
-[subsToGenesJoint, essIMMaddToIRMJoint] = linkEssGeneIMM2Subs(modelmilp, essJointIMMtfa, DPs, modelpre, essThr, essIRMtfa, NumAlt, time, jointIMM(:,1), filename);
-save(strcat('tmpresults/',filename,'_ess_subjoint_final.mat'));
-
-% Extract info about substrates linked to essentiality of the joint IMMs
-exportIMM2ess2subInfo(essIMMaddToIRMJoint,subsToGenesJoint,strcat(filename,'_ess_subjoint_final'));
+save(strcat(pathToSave,filename,'.mat'));

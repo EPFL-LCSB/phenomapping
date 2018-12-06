@@ -1,22 +1,23 @@
-function [DPs, model, objectives] = findDPMinMets(model, NumAlt, indUSE, time, tagMin, filename)
+function [DPs, model, objectives] = findDPMax(model, NumAlt, indUSE, time, tagMin, filename)
 % Get alternative solutions for MILP (maximization)
 %
 % USAGE:
 %
-%       [DPs, model, objectives] = findDPMinMets(model, NumAlt, indUSE, time, tagMin, filename)
+%       [DPs, model, objectives] = findDPMax(model, NumAlt, indUSE, time, tagMin, filename)
 %
 % INPUTS:
 %    model:           Model with TFA structure and MILP formulation
 %
 % OPTIONAL INPUTS:
 %    NumAlt:          Maximum number of alternatives to get (default = 1)
-%    indUSE:          Indexes of integers in the MILP (default = 'BFUSE')
+%    indUSE:          Indexes of integers in the MILP (default = 
+%                     model.indUSE)
 %    time:            Time in sec after which simulation will be stopped
 %                     (default = empty / no time provided)
-%    tagMin:          True to generate alternative solution of minimal size
+%    tagMin:          True to generate alternative solution of maximum size
 %                     only. False to generate up to the number of
 %                     alternatives provided in NumAlt (default = true)
-%    filename:        Name used to save DPs (default = 'imm')
+%    filename:        Name used to save DPs (default = 'PhenoMappingDPMax')
 %                     
 %
 % OUTPUTS:
@@ -25,7 +26,8 @@ function [DPs, model, objectives] = findDPMinMets(model, NumAlt, indUSE, time, t
 %    model:           Model with integer cuts integrated to avoid
 %                     repetition of same solution or supersolution (this 
 %                     is a superset of an obtained solution)
-%    objectives:      Exchange/Drain reactions
+%    objectives:      Optimal value, which is the sum of active intigers,
+%                     after the optimization
 %
 % .. Author:
 % Anush Chiappino 2017
@@ -44,9 +46,14 @@ if (nargin < 5)
     tagMin = 1;
 end
 if (nargin < 6)
-    filename = 'imm';
+    filename = 'PhenoMappingDPMax';
 end
 
+[~,NumVars] = size(model.A);
+model.f = zeros(NumVars,1);
+model.f(indUSE) = 1;
+
+model.objtype = -1; % maximization
 NumSols = 0;
 sol = optimizeThermoModel(model,0,'cplex',time);
 DPs = [];
@@ -92,7 +99,7 @@ while ((NumSols < NumAlt) && ~(isempty(sol.x)) && ~(sol.val==0))
         fprintf('Number of DPs:\t%d\n',NumSols);
         
         if rem(NumSols,5) == 0
-            save(strcat('tmpresults/',filename,'_DPs.mat'), 'DPs');
+            save(strcat(filename,'_DPs.mat'), 'DPs');
         end
     end
 end

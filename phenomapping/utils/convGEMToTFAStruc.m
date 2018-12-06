@@ -1,4 +1,21 @@
 function tfmodel = convGEMToTFAStruc(model)
+% Create a TFA model structure from a FBA model. This function does not
+% integrate thermo constraints and hence does not require any thermodynamic
+% data or related fields in the model
+%
+% USAGE:
+%
+%    tfmodel = convGEMToTFAStruc(model)
+%
+% INPUT:
+%    model:           Model with FBA structure
+%
+% OUTPUTS:
+%    tfmodel:           Model with TFA structure
+%
+% .. Author:
+% Anush Chiappino-Pepe 2017
+% 
 
 allRxnsRev = 1;
 % if all reversible parameter is indicated then we assume all reactions are reversible first except biomass

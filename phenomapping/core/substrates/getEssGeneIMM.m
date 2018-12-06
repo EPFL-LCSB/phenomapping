@@ -53,7 +53,7 @@ if (nargin < 8)
     jointIMM = [];
 end
 if (nargin < 9)
-    filename = 'imm';
+    filename = 'PhenoMappingSubstrates';
 end
 
 gr = optimizeThermoModel(model);
@@ -104,6 +104,6 @@ for i = 1:size(MatrixInfo,2)
         error('only FBA and TFA have been implemented')
     end
     if rem(i,50) == 0
-        save(strcat('tmpresults/',filename,'_ess.mat'), 'essIMM');
+        save(strcat(filename,'_ess.mat'), 'essIMM');
     end
 end

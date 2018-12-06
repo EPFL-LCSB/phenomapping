@@ -19,20 +19,20 @@ function [model, flagChange, drains, drainMets] = putDrainsForward(model)
 %    drainMets:       Metabolites exchanged
 %
 % .. Author:
-% Meri? Ataman 2014
+% Meric Ataman 2014
 % 
 
 drains = {};
 drainMets = {};
 flagChange = 0;
 
-for i=1:length(model.rxns)
+for i = 1:length(model.rxns)
     no_of_mets = length(find(model.S(:, i)));
     if no_of_mets==1
         drains(end+1,1) = model.rxns(i);
-        sto=model.S(:, i);
+        sto = model.S(:, i);
         drainMets(end+1,1) = model.mets(find(sto));
-        sto=sto(find(sto));
+        sto = sto(find(sto));
         if sto==1
             flagChange = 1;
             model.S(:, i) = -model.S(:, i);

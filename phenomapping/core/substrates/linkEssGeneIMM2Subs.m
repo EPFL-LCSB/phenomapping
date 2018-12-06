@@ -64,7 +64,7 @@ if (nargin < 9)
     jointIMM = [];
 end
 if (nargin < 10)
-    filename = 'imm';
+    filename = 'PhenoMappingSubstrates';
 end
 
 % pre-allocate outputs
@@ -113,7 +113,7 @@ for z = 1:size(MatrixInfo,2)
         ess_add = ess_add(ismember(ess_add, jointAddIMM(taggene==0)));
     end
     essIMMaddToIRM{z,1} = ess_add;
-    save(strcat('tmpresults/',filename,'_addGenes.mat'), 'essIMMaddToIRM');
+    save(strcat(filename,'_addGenes.mat'), 'essIMMaddToIRM');
     
     % get the subset of integer/continuous variables to study (the
     % substrates that are not part of the IMM/IMS)
@@ -141,7 +141,7 @@ for z = 1:size(MatrixInfo,2)
             % the IMM of study!
             modelKO.f(intUSE) = 1;
             modelKO.objtype = -1; %minimize:1, maximize:-1 (just for verification!)
-            cDPs = findDPMinMets(modelKO, NumAlt, intUSE, time, 0, filename); % optimize!
+            cDPs = findDPMax(modelKO, NumAlt, intUSE, time, 0, filename); % optimize!
             
             if (isempty(cDPs))
                 subsToGenes{z,1}{j,1} = 'problem: should be essential in the wtmodel';
@@ -156,7 +156,7 @@ for z = 1:size(MatrixInfo,2)
                     subsToGenes{z,1}{j,i} = '';
                 end
             end
-            save(strcat('tmpresults/',filename,'_subsToGenes.mat'), 'subsToGenes');
+            save(strcat(filename,'_subsToGenes.mat'), 'subsToGenes');
         else
             warning('check out! a gene marked as essential is not essential in the IMM')
         end

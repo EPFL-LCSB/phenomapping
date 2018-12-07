@@ -1,11 +1,11 @@
 function [model, checkList, tagReady] = initTestPhenoMappingModel(modeli, ...
-    cplexPath, ReactionDBpath, tagThermo, rxnNoThermo, pathToSave)
+   ReactionDBpath, tagThermo, rxnNoThermo)
 % Initial check list to verify the model is ready for a PhenoMapping
 % analysis
 %
 % USAGE:
 %
-%       [model, checkList, tagReady] = initTestPhenoMappingModel(modeli, cplexPath, ReactionDBpath, tagThermo, rxnNoThermo)
+%       [model, checkList, tagReady] = initTestPhenoMappingModel(modeli, ReactionDBpath, tagThermo, rxnNoThermo)
 %
 % INPUTS:
 %    model:           model with FBA/TFA structure
@@ -32,34 +32,18 @@ function [model, checkList, tagReady] = initTestPhenoMappingModel(modeli, ...
 %
 
 if (nargin < 2)
-    cplexPath = [];
-end
-if (nargin < 3)
     ReactionDBpath = [];
 end
-if (nargin < 4)
+if (nargin < 3)
     tagThermo = 1;
 end
-if (nargin < 5)
+if (nargin < 4)
     rxnNoThermo = [];
-end
-if (nargin < 6)
-    pathToSave = 'tmpresults/';
 end
 
 tagReady = 1;
 model = modeli;
-
-% PhenoMapping was developed to work with the solver CPLEX. We hence check 
-% that you have CPLEX installed. In future releases, this repository
-% will work with other solvers like gurobi.
-fprintf('1: setting up cplex as the solver\n');
-[solverOK,path_found] = addCplexPath(cplexPath);
-if solverOK
-    checkList{1} = strcat('ok: solver cplex path found ',path_found);
-else
-    checkList{1} = 'issue: solver cplex not found. Provide a valid path for cplex';
-end
+checkList = cell(5,1);
 
 % test for feasibility of the model
 sol = solveFBAmodelCplex(model);
@@ -68,7 +52,7 @@ if isnan(sol.f) || isempty(sol.f) || sol.f<1E-3
 end
 
 % check the model structure required for thermo conversion
-fprintf('2: checking model structure\n');
+fprintf('1: checking model structure\n');
 if ~isfield(model,'metCompSymbol')
     warning('the model does not contain the field metCompSymbol. The compartments will be searched automatically')
     model = addMetCompSymbol(model);
@@ -83,9 +67,9 @@ end
 % minimal media analysis)
 [model, flagChange] = putDrainsForward(model);
 if flagChange
-    checkList{2} = 'corrected: some drains in the model were not defined as A=> and the model was reconverted to a TFA structure';
+    checkList{1} = 'corrected: some drains in the model were not defined as A=> and the model was reconverted to a TFA structure';
 else
-    checkList{2} = 'ok: the model had all drains of the type A=>';
+    checkList{1} = 'ok: the model had all drains of the type A=>';
 end
 
 % check that the model has a TFA-friendly structure
@@ -94,11 +78,11 @@ if isfield(model,'A') && isfield(model,'f') && isfield(model,'var_lb') ...
         && isfield(model,'constraintNames') && isfield(model,'varNames') ...
         && isfield(model,'constraintType') && isfield(model,'vartypes') ...
         && isfield(model,'objtype')
-    checkList{3} = 'ok: the model already has a TFA structure';
+    checkList{2} = 'ok: the model already has a TFA structure';
     tagConv = 0;
 else
     tagConv = 1;
-    checkList{3} = 'corrected: the model was converted to a TFA structure';
+    checkList{2} = 'corrected: the model was converted to a TFA structure';
 end
 
 % if the model does not have a TFA-friendly structure or it has drains like
@@ -147,23 +131,23 @@ if isempty(model.indNF)
 end
 
 % make sure the model has the structures required for gene essentiality
-fprintf('3: checking fields for gene essentiality\n');
+fprintf('2: checking fields for gene essentiality\n');
 if isfield(model,'genes') && isfield(model,'grRules')
-    checkList{4} = 'ok: the model has the fields for gene essentiality';
+    checkList{3} = 'ok: the model has the fields for gene essentiality';
     if isfield(model,'rules')
-        checkList{5} = 'ok: the field rules is present';
+        checkList{4} = 'ok: the field rules is present';
     else
         [model] = generateRules(model);
-        checkList{5} = 'corrected: the field rules was added';
+        checkList{4} = 'corrected: the field rules was added';
     end
 else
-    checkList{4} = 'issue: add fields genes and grRules to the model';
-    checkList{5} = 'not tested: presence of field rules';
+    checkList{3} = 'issue: add fields genes and grRules to the model';
+    checkList{4} = 'not tested: presence of field rules';
     tagReady = 0;
 end
 
 % this trick makes the milp problems converge faster
-fprintf('4: reducing bigM to improve performance of MILP\n');
+fprintf('3: reducing bigM to improve performance of MILP\n');
 indfu = getAllVar(model,{'FU'});
 indbu = getAllVar(model,{'BU'});
 induf = getAllCons(model,{'UF'});
@@ -175,9 +159,9 @@ if full(model.A(induf(1),indfu(1))) < -51
             model.A(indur(i),indbu(i)) = -50;
         end
     end
-    checkList{6} = 'corrected: reduced capacity constrain of fluxes in TFA problem to accelerate MILP convergence';
+    checkList{5} = 'corrected: reduced capacity constrain of fluxes in TFA problem to accelerate MILP convergence';
 else
-    checkList{6} = 'ok: capacity constrain of fluxes in TFA problem is low and might have been predefined like this by the user';
+    checkList{5} = 'ok: capacity constrain of fluxes in TFA problem is low and might have been predefined like this by the user';
 end
 
 % summarize final status of the model
@@ -187,11 +171,4 @@ elseif ~isequal(model,modeli) && tagReady
     fprintf('checks were applied: the output model is now ready for phenomapping\n');
 else
     fprintf('some checks failed: the output model needs manual curation for phenomapping - details in checkList\n');
-end
-
-% create temporary results folder to save intermediate and final results: 
-% note that PhenoMapping will not upload the intermediate results 
-% - but you might need to use them if matlab crashes
-if ~isdir(pathToSave(1:end-1))
-    mkdir(pathToSave(1:end-1))
 end

@@ -43,3 +43,8 @@ if fid>0
     end
     fclose(fid);
 end
+if exist(filename,'file') == 2
+    fprintf('the data is now saved in a csv file \n');
+else
+    warning('the csv file was not created - check the saving_directory')
+end

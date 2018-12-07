@@ -3,7 +3,7 @@ High-throughput data: phenotypic, transcriptomic, and metabolomic data used for 
 
 This folder contains the high-throughput data used for the PhenoMapping of iPbe. 
 The data is arranged as a .mat structure, whose format and usage are specified
-`the documentation <http://phenomapping.readthedocs.io/en/latest/data_pbe.html>`_
+`the documentation <http://phenomapping.readthedocs.io/en/latest/data_pbe.html>`
 
 Origin of the data
 ------------------

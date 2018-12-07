@@ -41,7 +41,7 @@ if (nargin < 6)
     tagMax = 0;
 end
 if (nargin < 7)
-    filename = 'PhenoMappingDPMin';
+    filename = 'PhenoMappingMetabolomics';
 end
 
 conc = LCcons(:,1);
@@ -96,6 +96,8 @@ for i=1:length(conc)
         roundn((-model.var_lb(lcrow(i))) + concBounds(i,1),-5);
     model.constraintType{numCons+i} = '>';
 end
+
+model.indUSE = indLCUSE;
 
 % minimization: try to implement all maxLC and minLC possible
 fprintf('getting alternative solutions\n');

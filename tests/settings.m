@@ -26,31 +26,3 @@ addpath(genpath(strrep(mfilename('fullpath'),...
     'tests/settings','phenomapping')));
 [phenomapping_directory, thermo_data_directory] = initPhenoMappingPaths(...
     saving_directory);
-
-% Load test model: ipbe (tfa structure)
-model = load(strcat(phenomapping_directory,'/models/tipbe2_liver.mat'));
-model = model.tipbe_liver;
-modeldescription = 'iPbe';
-
-% Prepare the model for phenomapping
-[model, checkList] = initTestPhenoMappingModel(model,...
-    thermo_data_directory);
-clear thermo_data_directory
-
-% Define path to phenotypes and omics data for the test model
-phenotypes_description = {'phenotypes blood pbe','phenotypes liver pbe'};
-phenotypes_directory{1} = which('pbe_phenotypes_blood_Nov16.mat');
-phenotypes_directory{2} = which('pbe_phenotypes_liver_Jul18.mat');
-
-metabolomics_description = {'metabolomics blood pfa'};
-metabolomics_directory = which('allmetab_pfa_blood.mat');
-
-transcriptomics_description = {'transcriptomics blood pbe',...
-    'transcriptomics liver pbe'};
-transcriptomics_directory{1} = which(...
-    'levelGenes_pbe_liver_HepG2_mean_48h.mat');
-transcriptomics_directory{2} = which(...
-    'levelGenes_pbe_liver_HepG2_mean_48h.mat');
-
-filename = strcat(modeldescription,'_PhenoMappingSettings');
-save(strcat(saving_directory,filename,'.mat'));

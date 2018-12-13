@@ -53,13 +53,25 @@ if (nargin < 6) || isempty(filename)
     filename = 'PhenoMappingCondition2Genes';
 end
 
+% converting characters to cells to avoid issues
+if ischar(pathToPhenoData)
+    pathToPhenoData = {pathToPhenoData};
+end
+
 if (size(phenDesc,1)>size(phenDesc,2))
     phenDesc = phenDesc';
 end
 
+
 [conditionToGene] = collectInfoCell(conditionToGene);
 
-NumAlt = size(conditionToGene{1,1},2);
+% identify max number of alternatives found in conditionToGene
+NumAlt = 1;
+for i = 1:size(conditionToGene,1)
+    NumAlt = max([NumAlt;size(conditionToGene{i},2)]);
+end
+
+% create heading for alternatives
 heading = cell(1,NumAlt);
 for i = 1:NumAlt
     heading(i) = strcat('Alt',{' '},num2str(i));
@@ -68,8 +80,24 @@ end
 data = [];
 for i = 1:size(conditionToGene,1)
     if ~isempty(conditionToGene{i})
-        conditionToGene{i} = strrep(conditionToGene{i},strcat({' '},'<=>'),'');
-        conditionToGene{i} = strrep(conditionToGene{i},',','');
+        for j = 1:size(conditionToGene{i},1)
+            for z = 1:NumAlt
+                if z>(size(conditionToGene{i},2)) || ...
+                        isempty(conditionToGene{i}{j,z})
+                    conditionToGene{i}{j,z} = '';
+                else
+                    conditionToGene{i}{j,z} = strrep(conditionToGene{i}...
+                        {j,z},strcat({' '},'<=>',{' '}),'');
+                    conditionToGene{i}{j,z} = strrep(conditionToGene{i}...
+                        {j,z},strcat({' '},'<=>'),'');
+                    conditionToGene{i}{j,z} = strrep(conditionToGene{i}...
+                        {j,z},',','');
+                end
+                if iscell(conditionToGene{i}{j,z})
+                    conditionToGene{i}{j,z} = conditionToGene{i}{j,z}{1};
+                end
+            end
+        end
         if ~isempty(pathToPhenoData)
             phen = [];
             for j = 1:length(pathToPhenoData)
@@ -81,11 +109,11 @@ for i = 1:size(conditionToGene,1)
             tmp = getPhenotype(essGenes{i},'','',[]);
             phen = tmp(:,2);
         end
-        data = [data; ...
-            [strcat(conditionDesc,{' '},num2str(i)),phenDesc,heading]; ...
-            [essGenes{i},phen,conditionToGene{i}]];
+        data = [data; [strcat(conditionDesc,{' '},num2str(i)),phenDesc, ...
+            heading]; essGenes{i},phen,conditionToGene{i}];
     end
 end
+
 
 desc = '%s\t';
 for i = 2:size(data,2)

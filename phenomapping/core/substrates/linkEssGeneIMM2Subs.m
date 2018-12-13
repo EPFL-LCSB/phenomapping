@@ -1,11 +1,11 @@
 function [subsToGenes, essIMMaddToIRM] = ...
-    linkEssGeneIMM2Subs(modelmilp, essIMM, DPs, model, essThr, essIRM, ...
+    linkEssGeneIMM2Subs(modelmilp, essIMM, DPs, model, minObj, essIRM, ...
     NumAlt, time, jointIMM, filename)
 % Links essentiality of a gene with the subsToGenes missing in the IMM
 %
 % USAGE:
 %
-%    [subsToGenes, essIMMaddToIRM, essSubsToAdd] = linkEssGeneIMM2Subs(modelmilp, essIMM, DPs, model, essThr, essIRM, NumAlt, time, jointIMM, filename)
+%    [subsToGenes, essIMMaddToIRM, essSubsToAdd] = linkEssGeneIMM2Subs(modelmilp, essIMM, DPs, model, minObj, essIRM, NumAlt, time, jointIMM, filename)
 %
 %
 % INPUT:
@@ -18,8 +18,8 @@ function [subsToGenes, essIMMaddToIRM] = ...
 %
 %
 % OPTIONAL INPUTS:
-%    essThr:          Threshold on growth below which the KO is considered
-%                     to be lethal; required for essIRM (default = 0.1)
+%    minObj:          Minimum growth below which the KO is considered
+%                     to be lethal (default = 0.05)
 %    essIRM:          Essentiality in rich medium (default = tested with
 %                     thermoSingleGeneDeletion.m)
 %    NumAlt:          Number of alternatives to generate (default = 1)
@@ -42,17 +42,14 @@ function [subsToGenes, essIMMaddToIRM] = ...
 % Anush Chiappino-Pepe 2015
 %
 
-gr = optimizeThermoModel(model);
-gr = gr.val;
-
 if (nargin < 5)
-    essThr = 0.1;
+    minObj = 0.05;
 end
 if (nargin < 6)
     fprintf('TFA essentiality will be performed\n');
-    grRatioGeneTFA = thermoSingleGeneDeletion(model, 'TFA', model.genes, 0, 0, 0, essThr, model.indNF);
-    grRatioGeneTFA(isnan(grRatioGeneTFA)) = 0; %by default NaN is considered an essential KO
-    essIRM = model.genes(grRatioGeneTFA<essThr);
+    [~, grRateKOGeneTFA] = thermoSingleGeneDeletion(model, 'TFA', model.genes, 0, 0, 0, 0, model.indNF);
+    grRateKOGeneTFA(isnan(grRateKOGeneTFA)) = 0; %by default NaN is considered an essential KO
+    essIRM = model.genes(grRateKOGeneTFA<minObj);
 end
 if (nargin < 7)
     NumAlt = 10;
@@ -136,7 +133,7 @@ for z = 1:size(MatrixInfo,2)
         tt.var_ub(intCont) = 0; % block uptakes or secretions active in this IMM
         ss = optimizeThermoModel(tt);
         
-        if (isempty(ss.val) || ss.val<essThr*gr || isnan(ss.val)) % if essential continue to identify substrates that allow survival without this gene
+        if (isempty(ss.val) || ss.val<minObj || isnan(ss.val)) % if essential continue to identify substrates that allow survival without this gene
             % define integers only for the substrates that are not part of
             % the IMM of study!
             modelKO.f(intUSE) = 1;

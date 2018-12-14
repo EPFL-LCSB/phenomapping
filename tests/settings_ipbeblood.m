@@ -3,7 +3,7 @@
 %
 % USAGE:
 %
-%    run('settings_itgo.m')
+%    run('settings_ipbeblood.m')
 %
 %
 % .. Author:
@@ -18,19 +18,19 @@ clc
 % need to run this script / do not copy and paste!
 % saving_directory = 'tmpresults/';
 saving_directory = strrep(mfilename('fullpath'),...
-    'tests/settings_itgo','tmpresults/');
+    'tests/settings_ipbeblood','tmpresults/');
 
 % Initialize paths to phenomapping and dependencies (matTFA, texfba, and
 % cplex)
 addpath(genpath(strrep(mfilename('fullpath'),...
-    'tests/settings_itgo','phenomapping')));
+    'tests/settings_ipbeblood','phenomapping')));
 [phenomapping_directory, thermo_data_directory] = initPhenoMappingPaths(...
     saving_directory);
 
 % Load test model: ipbe (tfa structure)
-model = load(strcat(phenomapping_directory,'/models/itgo.mat'));
-model = model.itgo;
-modeldescription = 'iTgo';
+model = load(strcat(phenomapping_directory,'/models/tipbe4blood.mat'));
+model = model.tipbe;
+modeldescription = 'iPbeBlood';
 
 % Prepare the model for phenomapping
 [model, checkList] = initTestPhenoMappingModel(model,...
@@ -38,18 +38,16 @@ modeldescription = 'iTgo';
 clear thermo_data_directory
 
 % Define path to phenotypes and omics data for the test model
-phenotypes_description = 'phenotypes tachyzoites';
-phenotypes_directory = which('itgo_tachy_phenotypes.mat');
+phenotypes_description = {'phenotypes blood pbe','phenotypes liver pbe'};
+phenotypes_directory{1} = which('pbe_phenotypes_blood_Nov16.mat');
+phenotypes_directory{2} = which('pbe_phenotypes_liver_Jul18.mat');
 
 metabolomics_description = {'metabolomics blood pfa'};
 metabolomics_directory = which('allmetab_pfa_blood.mat');
 
-transcriptomics_description = {'transcriptomics tachyzoites',...
-    'transcriptomics bradyzoites'};
-transcriptomics_directory{1} = which(...
-    'itgo_tachy_levelGenes.mat');
-transcriptomics_directory{2} = which(...
-    'itgo_brady_levelGenes.mat');
+transcriptomics_description = {'transcriptomics blood pbe'};
+transcriptomics_directory = which(...
+    'levelGenes_pbe_liver_HepG2_mean_48h.mat');
 
 filename = strcat(modeldescription,'_PhenoMappingSettings');
 save(strcat(saving_directory,filename,'.mat'));

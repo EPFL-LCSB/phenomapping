@@ -165,9 +165,9 @@ else
 end
 
 % summarize final status of the model
-if isequal(model,modeli) && tagReady
+if isequal(rmfield(model,'indNF'),modeli) && tagReady
     fprintf('all checks passed: the output model is the same as the input model. The model is ready for phenomapping\n');
-elseif ~isequal(model,modeli) && tagReady
+elseif ~isequal(rmfield(model,'indNF'),modeli) && tagReady
     fprintf('checks were applied: the output model is now ready for phenomapping\n');
 else
     fprintf('some checks failed: the output model needs manual curation for phenomapping - details in checkList\n');

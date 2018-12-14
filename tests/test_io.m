@@ -20,6 +20,7 @@
 % run(strrep(this_file_directory,'test_io','settings.m'))
 
 tag_save_substrates = 1;
+tag_save_substrates_joint = 1;
 tag_save_metabolomics = 0;
 tag_save_transcriptomics = 0;
 
@@ -51,6 +52,15 @@ if tag_save_substrates
         strcat(saving_directory,filename,'_ess2sub4imm'));
 end
 
+if tag_save_substrates_joint
+    filename = strcat(modeldescription,'_PhenoMappingSubstratesJoint');
+    r1 = load(strcat(saving_directory,filename,'.mat'));
+    
+    % Extract info: substrates linked to essentiality of the IMMs
+    exportPhenoMappingInfo(r1.essIMMaddToIRMJoint, r1.subsToGenesJoint, ...
+        'IMMJoint', phenotypes_directory, phenotypes_description,...
+        strcat(saving_directory,filename,'_ess2sub4immJoint'));
+end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%
 % METABOLOMICS ANALYSIS %

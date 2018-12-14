@@ -3,7 +3,7 @@
 %
 % USAGE:
 %
-%    run('settings.m')
+%    run('settings_ipbeliver.m')
 %
 %
 % .. Author:
@@ -18,19 +18,19 @@ clc
 % need to run this script / do not copy and paste!
 % saving_directory = 'tmpresults/';
 saving_directory = strrep(mfilename('fullpath'),...
-    'tests/settings','tmpresults/');
+    'tests/settings_ipbeliver','tmpresults/');
 
 % Initialize paths to phenomapping and dependencies (matTFA, texfba, and
 % cplex)
 addpath(genpath(strrep(mfilename('fullpath'),...
-    'tests/settings','phenomapping')));
+    'tests/settings_ipbeliver','phenomapping')));
 [phenomapping_directory, thermo_data_directory] = initPhenoMappingPaths(...
     saving_directory);
 
 % Load test model: ipbe (tfa structure)
-model = load(strcat(phenomapping_directory,'/models/tipbe2_liver.mat'));
-model = model.tipbe_liver;
-modeldescription = 'iPbe';
+model = load(strcat(phenomapping_directory,'/models/tipbe4liver.mat'));
+model = model.tipbe;
+modeldescription = 'iPbeLiver';
 
 % Prepare the model for phenomapping
 [model, checkList] = initTestPhenoMappingModel(model,...
@@ -45,11 +45,8 @@ phenotypes_directory{2} = which('pbe_phenotypes_liver_Jul18.mat');
 metabolomics_description = {'metabolomics blood pfa'};
 metabolomics_directory = which('allmetab_pfa_blood.mat');
 
-transcriptomics_description = {'transcriptomics blood pbe',...
-    'transcriptomics liver pbe'};
-transcriptomics_directory{1} = which(...
-    'levelGenes_pbe_liver_HepG2_mean_48h.mat');
-transcriptomics_directory{2} = which(...
+transcriptomics_description = {'transcriptomics liver pbe'};
+transcriptomics_directory = which(...
     'levelGenes_pbe_liver_HepG2_mean_48h.mat');
 
 filename = strcat(modeldescription,'_PhenoMappingSettings');

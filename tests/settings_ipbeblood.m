@@ -47,7 +47,7 @@ metabolomics_directory = which('allmetab_pfa_blood.mat');
 
 transcriptomics_description = {'transcriptomics blood pbe'};
 transcriptomics_directory = which(...
-    'levelGenes_pbe_liver_HepG2_mean_48h.mat');
+    'levelGenes_pbe_blood_Troph_mean_24h.mat');
 
 filename = strcat(modeldescription,'_PhenoMappingSettings');
 save(strcat(saving_directory,filename,'.mat'));

@@ -1,127 +1,61 @@
-clear
-clc
+function [levelGenes, noData] = generateGeneLevels(model, genesrnainfo,...
+    genesrnainfovalue, tagEstNA)
+% Generate the gene levels field input to texfba for analysis of
+% genome-scale models with transcriptomics data
+%
+% [blockedRxns] = essenEvalRxns(model,rxns,rxnGPRs,genes,geneRatio)
+%
+% INPUT
+% model             FBA model structure
+% genesrnainfo      List of genes with associated mRNA values
+% genesrnainfovalue List of mRNA cound values for the genes in genesrnainfo
+%                   - if a matrix is provided the mean of all values for
+%                   the same gene will be calculated
+%
+% OPTIONAL INPUTS:
+% tagEstNA:         True to estimate for genes without data the average
+%                   value of mRNA level - if the hl and hp 
+%                   parameters of the texfba methodology are far from the 
+%                   mean this means these genes will be neglected anyways. 
+%                   False to define them and nan (default = false) 
+%
+% OUTPUTS
+% levelGenes        Levels of mRNA associated to the genes in the model (in
+%                   the order as they appear in model.genes)
+% noData            Genes in the model for which no data was found in the
+%                   dataset and values assigned based on tagEstNA
+%
+%
+% .. Author:
+% Anush Chiappino-Pepe 2016
+% 
 
-%% load model
-% iPbe
-% load('/Users/Anush/SWITCHdrive/EPFL_Anush/iPbev2/model_liver/tipbe2_liver.mat')
-% model = tipbe_liver;
+if (nargin < 4)
+    tagEstNA = 0;
+end
 
-% load('/Users/Anush/SWITCHdrive/EPFL_Anush/iPbev2/model_liver/tipbe2_liver_reducedModel.mat')
-% model = treducedModel;
+levelGenes = zeros(length(model.genes),1);
 
-% description = 'iPbe2 liver cs';
-% mm = load('/Users/Anush/SWITCHdrive/EPFL_Anush/iPbev2/model_liver/tipbe2_liver_cs_reducedModel.mat');
-% model = mm.treducedModel;
+% preprocessing of genes in model and genesrnainfo
+genesrnainfo = strtok(genesrnainfo,'.');
+genesrnainfo = strrep(genesrnainfo,{' '},'');
+genes = strrep(model.genes,'putative_','');
+genes = strtok(genes,'.');
+genes = strrep(genes,{' '},'');
+    
+% find genes in the model in the input genelist with transcriptomics data 
+[y,row] = ismember(genes, genesrnainfo);
 
-% load('/Users/Anush/SWITCHdrive/EPFL_Anush/iPbe/model_blood/tipbe_blood.mat')
-% model = tipbe;
+levelGenes(y) = mean(genesrnainfovalue(row(y),:),2);
+if tagEstNA
+    levelGenes(~y) = mean(mean(levelGenes(y),1),2); % for no data assume the mean of all - this will eliminate the gene from the analysis
+else
+    levelGenes(~y) = nan;
+end
 
-% load('/Users/Anush/SWITCHdrive/EPFL_Anush/iPbe/model_blood/treducedModel_blood.mat')
-% model = treducedModel;
-
-% load('/Users/Anush/SWITCHdrive/EPFL_Anush/iPbe/model_blood/treducedModel_bloodcs_allmets.mat')
-% model = treducedModel_bcsallmets;
-
-
-% iPfav2
-% load('/Users/Anush/SWITCHdrive/EPFL_Anush/iPfav2/model_liver/tipfav2_liver_corr.mat')
-% model = tipfav2;
-
-% load('/Users/Anush/SWITCHdrive/EPFL_Anush/iPfav2/model_liver/tipfav2_liver_reducedModel_corr.mat')
-% model = treducedModel;
-
-% load('/Users/Anush/SWITCHdrive/EPFL_Anush/iPfav2/model_blood/tipfav2_blood_corr.mat')
-% model = tipfav2;
-
-% load('/Users/Anush/SWITCHdrive/EPFL_Anush/iPfav2/model_blood/tipfav2_blood_reducedModel_corr.mat')
-% model = treducedModel;
-
-% load('/Users/Anush/SWITCHdrive/EPFL_Anush/iPfav2/model_blood/treducedModel_bloodcs_allmets.mat')
-% model = treducedModel_bcsallmets;
-
-description = 'iTgo tachy';
-% description = 'iTgo brady';
-mm = load('/Users/Anush/Dropbox/Aarti&Anush/analysis_itgo_Sep18/itgo_reducedModel.mat');
-model = mm.treducedModel;
-
-%% load RNAseq data
-
-% blood
-% load('/Users/Anush/SWITCHdrive/EPFL_Anush/14_pbe/data/Pbe_blood_RNAseq.mat')
-% load('/Users/Anush/SWITCHdrive/EPFL_Anush/iPfav2/data/2010_Otto_SI4_pfa_data.mat')
-
-% liver A
-% load('/Users/Anush/SWITCHdrive/EPFL_Anush/14_pbe/data/Counts_OnPbANKA_2a_Sunil_Feb17.mat')
-% liver B
-% load('/Users/Anush/SWITCHdrive/EPFL_Anush/14_pbe/data/Counts_OnPbANKA_2b_Sunil_Feb17.mat')
-% genesrnainfo=sunil; % comment for blood
-% genesrnainfovalue=sunilval;
-
-% liver pfa
-
-% hypnozoites
-% load('/Users/Anush/SWITCHdrive/EPFL_Anush/dormancy/data/bhatia_data_topfa.mat')
-% genesrnainfo = genesfal;
-% genesrnainfo=strtok(genesrnainfo,'.');
-% genesrnainfo=strrep(genesrnainfo,{' '},'');
-% genesrnainfovalue = numfal;
-% level = 1;
-
-
-load('/Users/Anush/Dropbox/Aarti&Anush/analysis_itgo_Sep18/data/RNAseq_data_toxo.mat')
-genesrnainfo = genes;
-genesrnainfo=strtok(genesrnainfo,'.');
-genesrnainfo=strrep(genesrnainfo,{' '},'');
-
-% tachy Toxo Aarti
-genesrnainfovalue = values(:,1);
-level = 1;
-
-% brady Toxo Aarti
-% genesrnainfovalue = values(:,2);
-% level = 1;
-
-
-%% decide time point
-% level=3; %3:4=trophozoite Pbe in blood, 4 trophozoite pfa blood, 3=48h in liver
-
-%% preprocessing of genes in model
-
-genes=strrep(model.genes,'putative_','');
-genes=strtok(genes,'.');
-genes=strrep(genes,{' '},'');
-
-% blood and liver
-[yes,row]=ismember(genes,genesrnainfo);
-sum(yes)
-levelGenes=zeros(length(model.genes),length(level));
-levelGenes(yes,:)=genesrnainfovalue(row(yes),level);
-levelGenes(not(yes),:)= mean(levelGenes(yes,:)); % for no data assume the mean of all - this will eliminate the gene from the analysis
-
-% hypnozoites
-% [yes,row]=ismember(genes,genesrnainfo);
-% sum(yes)
-% allval = genesrnainfovalue(row(yes));
-% allval(allval>500) = 500;
-% hist(allval)
-% %
-% selectThr = 150;
-% levelGenes=nan(length(model.genes),length(level));
-% levelGenes(yes,:)=allval;
-% indLow = find(levelGenes<selectThr);
-% indHigh = find(levelGenes>selectThr);
-
-
-
-%check problematic gene
-model.genes(not(yes))
-% [yes2,row2]=ismember('PBANKA_1118100',genesrnainfo);
-% [yes2,row2]=ismember('PBANKA_1118100.1',genesrnainfo);
-
-%%
-[yes,row]=ismember(genes,genesrnainfo);
-levelGenes_all=zeros(length(model.genes),size(genesrnainfovalue,2));
-for i=1:size(genesrnainfovalue,2)
-    levelGenes_all(yes,i)=genesrnainfovalue(row(yes),i);
-    levelGenes_all(not(yes),i)=mean(levelGenes_all(:,i)); % for no data assume the mean of all - this will eliminate the gene from the analysis
+% extract info of genes without data
+if any(~y)
+    noData = [model.genes(~y), genes(~y), levelGenes(~y)];
+else
+    noData = {'data for all genes was found'};
 end

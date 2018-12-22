@@ -1,17 +1,17 @@
-function [bottleneckMets, modelnew, bottleneckMetNames] = getBotNeckMets ...
-    (model, LCcons, grRate, NumAlt, time, tagMax, filename)
+function [botMets, modelnew, botMetNames] = getBotNeckMets ...
+    (model, LCcons, minObj, NumAlt, time, tagMax, filename)
 % Identify concentrations to relax to make model feasible
 %
 % USAGE:
 %
-%       [bottleneckMets, modelnew] = getBotNeckMets(model, LCcons, grRate, NumAlt)
+%       [botMets, modelnew, botMetNames] = getBotNeckMets(model, LCcons, minObj, NumAlt)
 %
 % INPUTS:
 %    model:           FEASIBLE model with TFA structure
 %    LCcons:          Default structure to integrate concentrations in TFA
 %
 % OPTIONAL INPUTS:
-%    grRate:          min growth to achieve (default = 0.007)
+%    minObj:          min growth to achieve (default = 0.05)
 %    NumAlt:          Maximum number of alternatives to get (default = 1)
 %    time:            Time in sec after which simulation will be stopped
 %                     (default = empty / no time provided)
@@ -21,15 +21,19 @@ function [bottleneckMets, modelnew, bottleneckMetNames] = getBotNeckMets ...
 %    filename:        Name used to save DPs (default = 'PhenoMappingDPMin')
 %
 % OUTPUTS:
-%    bottleneckMets:  Cell array with metabolites found in each alternative
-%    modelnew:        Model with MILP formulation and integer cuts integrated
+%    botMets:         Cell array with metabolites (met IDs) found in each 
+%                     alternative
+%    modelnew:        Model with MILP formulation and integer cuts 
+%                     integrated
+%    botMetNames:     Cell array with metabolites (met names) found in each 
+%                     alternative
 %
 % .. Author:
 % Meric Ataman & Anush Chiappino-Pepe 2015
 % 
 
 if (nargin < 3)
-    grRate = 0.1*0.07;
+    minObj = 0.05;
 end
 if (nargin < 4)
     NumAlt = 100;
@@ -41,7 +45,7 @@ if (nargin < 6)
     tagMax = 0;
 end
 if (nargin < 7)
-    filename = 'PhenoMappingMetabolomics';
+    filename = 'PhenoMappingDPMin';
 end
 
 conc = LCcons(:,1);
@@ -52,7 +56,7 @@ if iscell(concBounds)
 end
 
 indLCUSE = zeros(length(conc),1);
-model.var_lb(model.f==1) = grRate;
+model.var_lb(model.f==1) = minObj;
 model.f = zeros(length(model.f),1);
 [~, lcrow] = ismember(conc, model.varNames); %LC constrained
 
@@ -102,8 +106,8 @@ model.indUSE = indLCUSE;
 % minimization: try to implement all maxLC and minLC possible
 fprintf('getting alternative solutions\n');
 model.objtype = 1;
-bottleneckMets = cell(1,length(NumAlt));
-bottleneckMetNames = cell(1,length(NumAlt));
+botMets = cell(1,length(NumAlt));
+botMetNames = cell(1,length(NumAlt));
 [cDPs, modelnew] = findDPMin(model, NumAlt, indLCUSE, time, tagMax, filename); % get alternative solutions
 if isempty(cDPs)
     disp('no solution found');
@@ -113,9 +117,9 @@ else
         if isempty(rxnsBFUSE)
             error('no solution was found')
         else
-            bottleneckMets{1,i} = strrep(rxnsBFUSE, strcat(intTag,'_LC_'), '');
-            [~, tmp] = ismember(bottleneckMets{1,i}, model.mets);
-            bottleneckMetNames{1,i} = model.metNames(tmp);
+            botMets{1,i} = strrep(rxnsBFUSE, strcat(intTag,'_LC_'), '');
+            [~, tmp] = ismember(botMets{1,i}, model.mets);
+            botMetNames{1,i} = model.metNames(tmp);
         end
     end
 end

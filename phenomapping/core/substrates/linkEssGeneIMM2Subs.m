@@ -1,11 +1,11 @@
 function [subsToGenes, essIMMaddToIRM] = ...
-    linkEssGeneIMM2Subs(modelmilp, essIMM, DPs, model, minObj, essIRM, ...
-    NumAlt, time, jointIMM, filename)
+    linkEssGeneIMM2Subs(modelmilp, essIMM, DPs, model, minObj, ...
+    essTFAref, NumAlt, time, jointIMM, filename)
 % Links essentiality of a gene with the subsToGenes missing in the IMM
 %
 % USAGE:
 %
-%    [subsToGenes, essIMMaddToIRM, essSubsToAdd] = linkEssGeneIMM2Subs(modelmilp, essIMM, DPs, model, minObj, essIRM, NumAlt, time, jointIMM, filename)
+%    [subsToGenes, essIMMaddToIRM, essSubsToAdd] = linkEssGeneIMM2Subs(modelmilp, essIMM, DPs, model, minObj, essTFAref, NumAlt, time, jointIMM, filename)
 %
 %
 % INPUT:
@@ -20,7 +20,7 @@ function [subsToGenes, essIMMaddToIRM] = ...
 % OPTIONAL INPUTS:
 %    minObj:          Minimum growth below which the KO is considered
 %                     to be lethal (default = 0.05)
-%    essIRM:          Essentiality in rich medium (default = tested with
+%    essTFAref:       Essentiality in rich medium (default = tested with
 %                     thermoSingleGeneDeletion.m)
 %    NumAlt:          Number of alternatives to generate (default = 1)
 %    time:            Time in seconds (default = empty / not time limit)
@@ -35,7 +35,7 @@ function [subsToGenes, essIMMaddToIRM] = ...
 %    essIMMaddToIRM:  Essential genes in IMM on the top of essential genes
 %                     in rich medium
 %
-% NOTE: model, essIRM and essIMM should be given for the same model and
+% NOTE: model, essTFAref and essIMM should be given for the same model and
 % analysis method (FBA, TFA or TFA with metabolomics)
 %
 % .. Author:
@@ -49,7 +49,7 @@ if (nargin < 6)
     fprintf('TFA essentiality will be performed\n');
     [~, grRateKOGeneTFA] = thermoSingleGeneDeletion(model, 'TFA', model.genes, 0, 0, 0, 0, model.indNF);
     grRateKOGeneTFA(isnan(grRateKOGeneTFA)) = 0; %by default NaN is considered an essential KO
-    essIRM = model.genes(grRateKOGeneTFA<minObj);
+    essTFAref = model.genes(grRateKOGeneTFA<minObj);
 end
 if (nargin < 7)
     NumAlt = 10;
@@ -97,13 +97,13 @@ end
 % get pool of all genes essential in the IMMs in addition to IRM
 [~, commonIMM, notCommonIMM] = getOverlapSets(essIMM);
 jointAddIMM = unique([commonIMM; notCommonIMM]);
-jointAddIMM = jointAddIMM(~ismember(jointAddIMM,essIRM));
+jointAddIMM = jointAddIMM(~ismember(jointAddIMM,essTFAref));
 % we will get track of the genes analyzed to avoid repeating analysis
 taggene = zeros(length(jointAddIMM),1);
 
 for z = 1:size(MatrixInfo,2)
     % find the additional essential genes of each IMM wrt the IRM 
-    ess_add = essIMM{z,1}(~ismember(essIMM{z,1},essIRM));
+    ess_add = essIMM{z,1}(~ismember(essIMM{z,1},essTFAref));
     
     % avoid analyzing the same gene twice: taggene=1 was done already
     if (z >= 2) && ~isempty(jointAddIMM)

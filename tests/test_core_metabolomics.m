@@ -35,9 +35,13 @@ filename = strcat(modeldescription,'_PhenoMappingMetabolomics');
 
 % Integrate metabolomics data
 tmp = load(metabolomics_directory);
-[modelMetab, LCcons] = prepMetabCons(model, tmp.metNames, tmp.dataLC(:,1), ...
+[modelMetab, LCcons, tagFeas] = prepMetabCons(model, tmp.metNames, tmp.dataLC(:,1), ...
         tmp.dataLC(:,2));
 clear tmp
+
+if ~tagFeas
+    error('You need to generate a reduced metabolomics data set for integration. Check tutorial_issues.m');
+end
 
 % Get essentiality with metabolomics data
 [~, grRateGeneTFAmetab] = thermoSingleGeneDeletion(modelMetab, 'TFA',...

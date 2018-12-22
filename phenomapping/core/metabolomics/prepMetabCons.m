@@ -1,4 +1,5 @@
-function [NewModel, LCcons] = prepMetabCons(model, metNames, LCmin, LCmax)
+function [NewModel, LCcons, tagFeas] = prepMetabCons(model, metNames, ...
+    LCmin, LCmax)
 % Integrates metabolomics data into a model (with TFA structure): we
 % provide a metabolite name and its concentration value (mol/Lcell). 
 % The contraint for the metabolite concentration will be integrated for 
@@ -8,7 +9,7 @@ function [NewModel, LCcons] = prepMetabCons(model, metNames, LCmin, LCmax)
 %
 % USAGE:
 %
-%    [NewModel, LCcons] = prepMetabCons(model, metNames, LCmin, LCmax)
+%    [NewModel, LCcons, tagFeas] = prepMetabCons(model, metNames, LCmin, LCmax)
 %
 % INPUT:
 %    model:           TFA model structure
@@ -28,6 +29,8 @@ function [NewModel, LCcons] = prepMetabCons(model, metNames, LCmin, LCmax)
 %                     used to integrate metabolomics data into a TFA model
 %                     LCcons = [LC_metID, LN(min concentration), LN(max
 %                     concentration)]
+%    tagFeas:         Tag to define whether the model is feasible upon 
+%                     integration of metabolomics data.
 %
 % .. Author:
 % Anush Chiappino-Pepe 2015
@@ -72,4 +75,9 @@ end
 LCcons = [strcat('LC_',constraints), num2cell(LC)];
 % integrating metabolomics set into the model
 NewModel = loadConstraints(model, LCcons);
+sol = optimizeThermoModel(NewModel);
+
+tagFeas = 1;
+if isnan(sol.val) || isempty(sol.val) || (sol.val<1E-3)
+    tagFeas = 0;
 end

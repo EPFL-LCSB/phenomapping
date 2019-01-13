@@ -42,7 +42,7 @@ if (nargin < 5) || isempty(NumAlt)
     indNF = getAllVar(expModel, {'NF'});
 end
 if (nargin < 6) || isempty(filename)
-    filename = 'PhenoMappingTranscriptomics';
+    filename = 'PhenoMappingTranscriptomics_DPs';
 end
 
 rxnsToKeep = cell(NumAlt,1);
@@ -61,8 +61,14 @@ expModel.objtype = -1; %max
 
 solution = getExpProfile(expModel, NumAlt, indInt, indNF, filename);
 
-DP = solution.sol_matrix(indInt,:);
 rxns = expModel.varNames(indInt);
+if ~isempty(solution.sol_matrix)
+    DP = solution.sol_matrix(indInt,:);
+else
+    DP =[];
+    rxnsToRelax = [];
+    rxnsToKeep = rxns;
+end
 
 for i = 1:size(DP,2)
     rxnsToKeep{i} = rxns(DP(:,i)>0.9);

@@ -26,7 +26,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % inputs
-indTransDir = 1;        % index in transcriptomics_directory
 grRate = 0.05;          % optimal growth rate
 essThr = 0.1;           % essentiality threshold
 minObj = essThr*grRate; % minimal required growth
@@ -34,7 +33,7 @@ lowPvalue = 25;
 highPvalue = 75;
 percent_l = 2E-3;
 percent_h = 2E-5;
-NumAlt = 1;             % 1 for test! suggested 5000; % number of alternatives
+NumAlt = 100;             % 1 for test! suggested 5000; % number of alternatives
 selectAlt = [];         % expression profile that we desire to fix, empty just requires MCS
 flagPlot = 1;           % true to see plot of gene expression levels
 geneKO = {};            % 
@@ -45,7 +44,7 @@ filename = strcat(modeldescription,'_PhenoMappingTranscriptomics');
 
 % TEX-FBA analysis
 % load levelGenes.mat
-load(transcriptomics_directory{indTransDir});
+load(transcriptomics_directory);
 
 % Integrate gene expression constraints
 [expModelAlt, solution, newgrRules, expModel] = integrateGeneExp ...
@@ -59,7 +58,8 @@ load(transcriptomics_directory{indTransDir});
 % Link gene essentiality at each expression profile to rxn levels
 % responsible for it
 botRxnLevels = linkEssGene2Exp(expModel, addEssGenesExp, solution, ...
-    indInt, minObj, NumAlt, model.indNF, filename);
+    indInt, minObj, NumAlt, model.indNF, strcat(saving_directory,...
+    filename,'_DPs'));
 
 save(strcat(saving_directory,filename,'.mat'));
 

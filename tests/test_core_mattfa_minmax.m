@@ -29,7 +29,7 @@
 
 % inputs
 precision = 5;          % nb of decimals for rounding
-tagFBA = 1;             % true for FBA, false for TFA
+tagFBA = 0;             % true for FBA, false for TFA
 perObj = 0;             % percentage of optimal growth
 filename = strcat(modeldescription,'_PhenoMappingMinMax');
 

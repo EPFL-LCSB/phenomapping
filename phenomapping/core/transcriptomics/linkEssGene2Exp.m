@@ -44,7 +44,7 @@ if (nargin < 7) || isempty(NumAlt)
     indNF = getAllVar(expModel, {'NF'});
 end
 if (nargin < 8) || isempty(filename)
-    filename = 'PhenoMappingTranscriptomics';
+    filename = 'PhenoMappingTranscriptomics_DPs';
 end
 
 posaltmcs = find(sol.store_obj>max(sol.store_obj)-0.5);
@@ -56,6 +56,12 @@ for sAi = 1:length(posaltmcs) % select alternative to integrate
         modeli = thermoDeleteModelGenes(expModel, essExp{sAi}(i));
         rxnsToRelax = getBotNeckRxns(modeli, indInti, minObj, NumAlt,...
             indNF, filename);
-        botRxnLevels{sAi}(i,:) = rxnsToRelax;
+        if isempty(rxnsToRelax)
+            botRxnLevels{sAi}{i} = {};
+        else
+            for t=1:size(rxnsToRelax,1)
+                botRxnLevels{sAi}{i,t} = rxnsToRelax{t};
+            end
+        end
     end
 end

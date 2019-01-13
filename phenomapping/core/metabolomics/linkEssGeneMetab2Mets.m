@@ -72,7 +72,6 @@ if (nargin < 9)
     filename = 'PhenoMappingDPMin';
 end
 
-
 addEssMetab = essTFAmetab(~ismember(essTFAmetab,essTFAref));
 
 % Get bottleneck metabolites

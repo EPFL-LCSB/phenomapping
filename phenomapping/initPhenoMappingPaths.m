@@ -40,11 +40,11 @@ addpath(genpath(phenomapping_directory));
 
 if (nargin < 2)
     mattfa_directory = strrep(phenomapping_directory,'phenomapping/',...
-        'matTFA/');
+        'matTFA');
 end
 if (nargin < 3)
     texfba_directory = strrep(phenomapping_directory,'phenomapping/',...
-        'texfba/');
+        'texfba');
 end
 
 

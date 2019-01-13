@@ -1,9 +1,9 @@
-function [levelGenes, noData] = generateGeneLevels(model, genesrnainfo,...
+function [levelGenes, genesNA] = generateGeneLevels(model, genesrnainfo,...
     genesrnainfovalue, tagEstNA)
 % Generate the gene levels field input to texfba for analysis of
 % genome-scale models with transcriptomics data
 %
-% [blockedRxns] = essenEvalRxns(model,rxns,rxnGPRs,genes,geneRatio)
+% [levelGenes, genesNA] = generateGeneLevels(model, genesrnainfo, genesrnainfovalue, tagEstNA)
 %
 % INPUT
 % model             FBA model structure
@@ -22,7 +22,7 @@ function [levelGenes, noData] = generateGeneLevels(model, genesrnainfo,...
 % OUTPUTS
 % levelGenes        Levels of mRNA associated to the genes in the model (in
 %                   the order as they appear in model.genes)
-% noData            Genes in the model for which no data was found in the
+% genesNA           Genes in the model for which no data was found in the
 %                   dataset and values assigned based on tagEstNA
 %
 %
@@ -55,7 +55,7 @@ end
 
 % extract info of genes without data
 if any(~y)
-    noData = [model.genes(~y), genes(~y), levelGenes(~y)];
+    genesNA = [model.genes(~y), genes(~y), levelGenes(~y)];
 else
-    noData = {'data for all genes was found'};
+    genesNA = {'data for all genes was found'};
 end

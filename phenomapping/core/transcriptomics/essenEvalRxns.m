@@ -1,35 +1,21 @@
-function [blockedRxns] = essenEvalRxns(model,rxns,rxnGPRs,genes,geneRatio)
-% Identify reactions to delete if we assume that the lowly expressed genes
-% are "knocked out"
+function [blockedRxns] = essenEvalRxns(model, rxns, rxnGPRs, genes,...
+    geneRatio)
+% Identify reactions associated to lowly expressed genes
 %
-% [blockedRxns] = essenEvalRxns(model,rxns,rxnGPRs,genes,geneRatio)
+% [blockedRxns] = essenEvalRxns(model, rxns, rxnGPRs, genes, geneRatio)
 %
-%INPUT
+% INPUT
 % model             TFA model structure
-%
-%OPTIONAL INPUTS
 % rxns              Include objective rxns in the exchange rxn set (1) or not (0)
 %                   (Default = false)
-% irrevFlag         Model is in irreversible format (1) or not
+% rxnGPRs           Model is in irreversible format (1) or not
 %                   (Default = false)
 %
-%OUTPUTS
-% blockedRxns       Reactions to delete (associated to lowly expressed
-%                   genes)
-%                   model is exchange or not 
-% selUpt            Boolean vector indicating whether each reaction in
-%                   model is nutrient uptake or not
+% OUTPUTS
+% blockedRxns       Reactions associated to lowly expressed genes
+% 
 %
-% Exchange reactions only have one non-zero (+1/-1) element in the 
-% corresponding column of the stoichiometric matrix. Uptake reactions are 
-% exchange reactions are exchange reactions with negative lower bounds.
-%
-% 10/14/05 Markus Herrgard
-
-% MUmodel is TFA fomat model
-% geneIdx: gene indexes in the model
-% geneRatio: coreesponding gene ratios
-% output
+% 2016 Vikash Pandey
 
 geneRatio_map = containers.Map(genes,geneRatio);
 rxnExp = nan(numel(rxns),1);

@@ -16,6 +16,8 @@ function [grRatio, grRateKO, grRateWT, hasEffect, delRxn, fluxSolution, impactTa
 %                     (default = false)
 %    essThr:          Threshold on growth below which the KO is considered
 %                     to be lethal; required for flagTasks (default = 0.1)
+%    indNF:           Indexes of net fluxes of all reactions (default = 
+%                     get them here)
 %
 % OUTPUTS:
 %    grRatio:         Computed growth rate ratio between deletion strain and wild type

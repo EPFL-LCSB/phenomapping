@@ -1,10 +1,10 @@
 function [botMets, modelnew, botMetNames] = getBotNeckMets ...
     (model, LCcons, minObj, NumAlt, time, tagMax, filename)
-% Identify concentrations to relax to make model feasible
+% Identify concentrations to relax and make model feasible
 %
 % USAGE:
 %
-%       [botMets, modelnew, botMetNames] = getBotNeckMets(model, LCcons, minObj, NumAlt)
+%       [botMets, modelnew, botMetNames] = getBotNeckMets(model, LCcons, minObj, NumAlt, time, tagMax, filename)
 %
 % INPUTS:
 %    model:           FEASIBLE model with TFA structure
@@ -61,7 +61,8 @@ model.f = zeros(length(model.f),1);
 [~, lcrow] = ismember(conc, model.varNames); %LC constrained
 
 fprintf('defining MILP problem\n');
-intTag = {'LCUSE'}; % integer tag used in this MILP
+intTag = {'LCUSE'};
+% add binary variables for MILP
 [~,numVars] = size(model.A);
 for i=1:length(conc)
     model.varNames(numVars+i,1) = strcat(intTag, '_', model.varNames(lcrow(i)));
@@ -102,8 +103,7 @@ for i=1:length(conc)
 end
 
 model.indUSE = indLCUSE;
-
-% minimization: try to implement all maxLC and minLC possible
+% minimization: try to integrate all maxLC and minLC possible
 fprintf('getting alternative solutions\n');
 model.objtype = 1;
 botMets = cell(1,length(NumAlt));

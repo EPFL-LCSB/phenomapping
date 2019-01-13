@@ -26,7 +26,8 @@ function [essIMM, solOpt, models] = getEssGeneIMM(model, DPs, ...
 %    jointIMM:        Medium composition of jointIMM or any other at which 
 %                     you might want to test gene essentiality (default =
 %                     empty - to test essentiality at the IMMs of the DPs)
-%    filename:        Name used to save DPs (default = 'imm')
+%    filename:        Name used to save DPs (default = 
+%                     'PhenoMappingSubstrates')
 %
 % OUTPUTS:
 %    essIMM:          Essentiality per IMM
@@ -37,22 +38,22 @@ function [essIMM, solOpt, models] = getEssGeneIMM(model, DPs, ...
 % Anush Chiappino-Pepe 2015
 %
 
-if (nargin < 4)
+if (nargin < 4) || isempty(method)
     method = 'FBA';
 end
-if (nargin < 5)
+if (nargin < 5) || isempty(minObj)
     minObj = 0.05;
 end
 if (nargin < 6)
     essGenesFBA = [];
 end
-if (nargin < 7)
+if (nargin < 7) || isempty(flagUpt)
     flagUpt = 1; %analysis of IMM
 end
 if (nargin < 8)
     jointIMM = [];
 end
-if (nargin < 9)
+if (nargin < 9) || isempty(filename)
     filename = 'PhenoMappingSubstrates';
 end
 

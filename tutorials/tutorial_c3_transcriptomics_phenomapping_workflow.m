@@ -76,19 +76,8 @@ addEssMetab = essTFAge(~ismember(essTFAge,essTFAref));
 save(strcat(pathToSave,filename,'.mat'));
 
 % for each transcriptomic profile
-indUPDOWN = [expModelm.ExpInfo.indUP; expModelm.ExpInfo.indDOWN];
-essGenesTransAlt = cell(size(solution.z_matrix,2),1);
-grRateGeneTFAgeAlt = cell(size(solution.z_matrix,2),1);
-
-for sAi = 1:size(solution.z_matrix,2) % select alternative to integrate
-    expModelAlt = integrateConsProfile(expModelm, solution, indUPDOWN, ...
-        sAi);
-    [~, grRateGeneTFAgeAlt{sAi}] = thermoSingleGeneDeletion(expModelAlt,...
-        'TFA', expModelAlt.genes, 0, 0, 0, essThr, expModelAlt.indNF);
-    grRateGeneTFAgeAlt{sAi}(isnan(grRateGeneTFAgeAlt{sAi})) = 0;
-    essGenesTransAlt{sAi,1} = expModelm.genes(grRateGeneTFAgeAlt{sAi} < ...
-        minObj);
-end
+[grRateGeneTFAexpProf, essGenesExpProf] = getEssGeneExpProfile...
+    (expModelm,solution,minObj);
 
 save(strcat(pathToSave,filename,'.mat'));
 

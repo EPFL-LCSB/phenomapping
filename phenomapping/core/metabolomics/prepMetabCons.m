@@ -1,11 +1,10 @@
 function [NewModel, LCcons, tagFeas] = prepMetabCons(model, metNames, ...
     LCmin, LCmax)
-% Integrates metabolomics data into a model (with TFA structure): we
-% provide a metabolite name and its concentration value (mol/Lcell). 
-% The contraint for the metabolite concentration will be integrated for 
-% that metabolite in all intracellular compartments where it appears.
-% NOTE: this function only makes sense if the model has thermodynamic
-% constraints (from matTFA)
+% Integrates metabolomics data into a model (with TFA structure as defined 
+% in matTFA): one provides a metabolite name and its concentration value
+% (mol/Lcell). The constraint for the metabolite concentration will be 
+% integrated for that metabolite in all intracellular compartments where
+% it appears.
 %
 % USAGE:
 %
@@ -80,4 +79,5 @@ sol = optimizeThermoModel(NewModel);
 tagFeas = 1;
 if isnan(sol.val) || isempty(sol.val) || (sol.val<1E-3)
     tagFeas = 0;
+    warning('You need to generate a reduced metabolomics data set for integration. Check tutorial_issues.m');
 end

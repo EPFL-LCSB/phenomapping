@@ -47,8 +47,9 @@ if (nargin < 5)
 end
 if (nargin < 6)
     fprintf('TFA essentiality will be performed\n');
-    [~, grRateKOGeneTFA] = thermoSingleGeneDeletion(model, 'TFA', model.genes, 0, 0, 0, 0, model.indNF);
-    grRateKOGeneTFA(isnan(grRateKOGeneTFA)) = 0; %by default NaN is considered an essential KO
+    [~, grRateKOGeneTFA] = thermoSingleGeneDeletion(model, 'TFA', ...
+        model.genes, 0, 0, 0, 0, model.indNF);
+    grRateKOGeneTFA(isnan(grRateKOGeneTFA)) = 0;
     essTFAref = model.genes(grRateKOGeneTFA<minObj);
 end
 if (nargin < 7)
@@ -70,7 +71,8 @@ essIMMaddToIRM = cell(size(essIMM,1),1);
 
 % get indexes of integer and continuous variables of the milp
 indUSE = modelmilp.indUSE;
-[~, indCont] = ismember(strrep(modelmilp.varNames(indUSE),'BFUSE_',''),modelmilp.varNames); % get indexes of continuous variable associated to integers
+[~, indCont] = ismember(strrep(modelmilp.varNames(indUSE),'BFUSE_',''),...
+    modelmilp.varNames); % get indexes of continuous variable associated to integers
 % extract part of matrix with milp solution from IMM
 if ~isempty(jointIMM)
     % this is for the analysis of the jointIMM or any other media of
@@ -83,9 +85,11 @@ else
 end
 
 % set lb in biomass if this was not defined before
-if modelmilp.var_lb(ismember(modelmilp.varNames,strcat('F_',modelmilp.rxns(modelmilp.c==1))))<1e-7
+if modelmilp.var_lb(ismember(modelmilp.varNames,strcat('F_',...
+        modelmilp.rxns(modelmilp.c==1))))<1e-7
     warning('there is no defined lb in the objective function')
-    modelmilp.var_lb(ismember(modelmilp.varNames,strcat('F_',modelmilp.rxns(modelmilp.c==1))))=1e-3;
+    modelmilp.var_lb(ismember(modelmilp.varNames,strcat('F_',...
+        modelmilp.rxns(modelmilp.c==1))))=1e-3;
 end
 
 % check there is no cut constraint limiting the length of the milp solution
@@ -148,7 +152,8 @@ for z = 1:size(MatrixInfo,2)
                 if (~isempty(rxns))
                     rxnsEss=strrep(rxns, 'BFUSE_R_', '');
                     rxnsEss=strrep(rxnsEss, 'BFUSE_F_', '');
-                    subsToGenes{z,1}{j,i} = printRxnFormula(modelmilp,rxnsEss,0,0,1);
+                    subsToGenes{z,1}{j,i} = printRxnFormula(modelmilp,...
+                        rxnsEss,0,0,1);
                 else
                     subsToGenes{z,1}{j,i} = '';
                 end

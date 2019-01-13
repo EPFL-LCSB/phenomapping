@@ -14,7 +14,7 @@
 
 % clear
 % clc
-% 
+%
 % this_file_directory = mfilename('fullpath');
 % % run(strrep(this_file_directory,'_metabolomics','_essentiality.m'))
 
@@ -35,32 +35,20 @@ filename = strcat(modeldescription,'_PhenoMappingMetabolomics');
 
 % Integrate metabolomics data
 tmp = load(metabolomics_directory);
-[modelMetab, LCcons, tagFeas] = prepMetabCons(model, tmp.metNames, tmp.dataLC(:,1), ...
-        tmp.dataLC(:,2));
+[modelMetab, LCcons, tagFeas] = prepMetabCons(model, tmp.metNames, ...
+    tmp.dataLC(:,1), tmp.dataLC(:,2));
 clear tmp
 
-if ~tagFeas
-    error('You need to generate a reduced metabolomics data set for integration. Check tutorial_issues.m');
-end
-
 % Get essentiality with metabolomics data
-[~, grRateGeneTFAmetab] = thermoSingleGeneDeletion(modelMetab, 'TFA',...
-    modelMetab.genes, 0, 0, 0, essThr, modelMetab.indNF);
-grRateGeneTFAmetab(isnan(grRateGeneTFAmetab)) = 0; %by default NaN is considered an essential KO
+[~, grRateGeneTFAmetab] = thermoSingleGeneDeletion(modelMetab, ...
+    'TFA', modelMetab.genes, 0, 0, 0, essThr, modelMetab.indNF);
+grRateGeneTFAmetab(isnan(grRateGeneTFAmetab)) = 0;
 essTFAmetab = modelMetab.genes(grRateGeneTFAmetab < minObj);
 
-addEssMetab = essTFAmetab(~ismember(essTFAmetab,essTFAref));
-
 % Get bottleneck metabolites
-bottleneckMets = cell(length(addEssMetab),1);
-bottleneckMetNames = cell(length(addEssMetab),1);
-
-for i = 1:length(addEssMetab)
-    modelDel = thermoDeleteModelGenes(model, addEssMetab{i});
-    [bottleneckMets{i}, ~, bottleneckMetNames{i}] = getBotNeckMets(...
-        modelDel, LCcons, minObj, NumAlt, time, tagMax, ...
-        strcat(saving_directory,filename));
-end
+[botMets, botMetNames, addEssMetab] = ...
+    linkEssGeneMetab2Mets(model, LCcons, minObj, essTFAref, ...
+    essTFAmetab, NumAlt, time, tagMax, strcat(saving_directory,filename));
 
 save(strcat(saving_directory,filename,'.mat'));
 

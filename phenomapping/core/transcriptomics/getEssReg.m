@@ -50,7 +50,7 @@ posaltmcs = find(sol.store_obj>max(sol.store_obj)-0.5);
 for i = 1:length(posaltmcs)
     expModelAlt = integrateConsProfile(expModel, sol, indUPDOWN, ...
         posaltmcs(i));
-    [~, essGenesReg{i}] = thermoSingleGeneDeletionGeneExpNewGPR(expModelAlt, minObj, 100, 0);
+    [~, essGenesReg{i}] = thermoSingleGeneDeletionGeneExpNewGPR(expModelAlt, minObj, 1, 0);
     addEssGenesReg{i} = essGenesReg{i}(~ismember(essGenesReg{i}, ...
         essTFAref));
 end

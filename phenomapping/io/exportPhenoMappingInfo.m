@@ -120,4 +120,4 @@ for i = 2:size(data,2)
     desc = strcat(desc,'%s\t');
 end
 
-writeData(strcat(filename,'.csv'),data,desc);
+writeData(strcat(filename,'.txt'),data,desc);

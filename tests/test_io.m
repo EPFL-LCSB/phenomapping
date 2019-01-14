@@ -35,12 +35,8 @@ end
 % SUBSTRATE ANALYSIS %
 %%%%%%%%%%%%%%%%%%%%%%
 
-if tag_save_substrates || tag_save_secretions
-    if tag_save_substrates
-        filename = strcat(modeldescription,'_PhenoMappingSubstrates');
-    elseif tag_save_secretions
-        filename = strcat(modeldescription,'_PhenoMappingSecretions');
-    end
+if tag_save_substrates
+    filename = strcat(modeldescription,'_PhenoMappingSubstrates');
     r1 = load(strcat(saving_directory,filename,'.mat'));
     
     % Extract info about composition of the IMMs
@@ -62,20 +58,52 @@ if tag_save_substrates || tag_save_secretions
         strcat(saving_directory,filename,'_ess2sub4imm'));
 end
 
-
-
-if tag_save_substrates_joint || tag_save_secretions_joint
-    if tag_save_substrates_joint
-        filename = strcat(modeldescription,'_PhenoMappingSubstratesJoint');
-    elseif tag_save_secretions_joint
-        filename = strcat(modeldescription,'_PhenoMappingSecretionsJoint');
-    end
+if tag_save_substrates_joint
+    filename = strcat(modeldescription,'_PhenoMappingSubstratesJoint');
     r1 = load(strcat(saving_directory,filename,'.mat'));
     
     % Extract info: substrates linked to essentiality of the IMMs
     exportPhenoMappingInfo(r1.essIMMaddToIRMJoint, r1.subsToGenesJoint, ...
         'IMMJoint', phenotypes_directory, phenotypes_description,...
         strcat(saving_directory,filename,'_ess2sub4immJoint'));
+end
+
+
+%%%%%%%%%%%%%%%%%%%%%%
+% SECRETION ANALYSIS %
+%%%%%%%%%%%%%%%%%%%%%%
+
+if tag_save_secretions
+    filename = strcat(modeldescription,'_PhenoMappingSecretions');
+    r1 = load(strcat(saving_directory,filename,'.mat'));
+    
+    % Extract info about composition of the IMMs
+    [immOutput.StatsMets, immOutput.Mets, immOutput.drainClass, ...
+        immOutput.statsClass] = extractInfoIMMDPs(r1.modelmilp, r1.DPsimm, ...
+        r1.modelmilp.indUSE);
+    
+    immOutput.summary = [strrep(immOutput.Mets,',',''), ...
+        immOutput.drainClass, num2cell(immOutput.StatsMets)];
+    
+    writeData(strcat(saving_directory,filename,'.csv'), immOutput.summary,...
+        '%s\t%s\t%s\t%s\t%i', {'Drain ID', 'Met ID', 'Met name', ...
+        'Classification based on IMS', 'Appearance in IMS'}, ...
+        '%s\t%s\t%s\t%s\t%s');
+    
+    % Extract info: substrates linked to essentiality of the IMMs
+    exportPhenoMappingInfo(r1.essIMMaddToIRM, r1.subsToGenes, 'IMS', ...
+        phenotypes_directory, phenotypes_description,...
+        strcat(saving_directory,filename,'_ess2sub4ims'));
+end
+
+if tag_save_secretions_joint
+    filename = strcat(modeldescription,'_PhenoMappingSecretionsJoint');
+    r1 = load(strcat(saving_directory,filename,'.mat'));
+    
+    % Extract info: substrates linked to essentiality of the IMMs
+    exportPhenoMappingInfo(r1.essIMMaddToIRMJoint, r1.subsToGenesJoint, ...
+        'IMSJoint', phenotypes_directory, phenotypes_description,...
+        strcat(saving_directory,filename,'_ess2sub4imsJoint'));
 end
 
 %%%%%%%%%%%%%%%%%%%%%%%%%

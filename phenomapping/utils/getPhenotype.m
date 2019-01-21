@@ -47,7 +47,7 @@ listGenes = strtok(listGenes,'.');
 
 if strcmp(PlasmoSpecie,'pbe')
     if strcmp(lifeStage,'blood')
-        pathToData = strcat(curdir,'/data/pbe/pbe_phenotypes_blood_Nov16.mat');
+        pathToData = strcat(curdir,'/tests/ref/pbe/pbe_phenotypes_blood_Nov16.mat');
         if ~exist(pathToData,'file') == 2
             pathToData = [];
         end
@@ -55,7 +55,7 @@ if strcmp(PlasmoSpecie,'pbe')
             pathToData = input('Please provide the path to the blood phenotypes of P. berghei and press enter\n... ','s');
         end
     elseif strcmp(lifeStage,'liver')
-        pathToData = strcat(curdir,'/data/pbe/pbe_phenotypes_liver_Jul18.mat');
+        pathToData = strcat(curdir,'/tests/ref/pbe/pbe_phenotypes_liver_Jul18.mat');
         if ~exist(pathToData,'file') == 2
             pathToData = [];
         end

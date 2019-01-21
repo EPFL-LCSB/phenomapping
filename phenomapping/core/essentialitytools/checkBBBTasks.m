@@ -119,5 +119,7 @@ else
     error('only FBA, MOMA, lMOMA, TFA, tMOMA, and tlMOMA are identified as methods');
 end
 
-essBBB = BBB(cell2mat(BBBprod) < -1*essThr*coef,:);
+BBBmaxprod = cell2mat(BBBprod);
+BBBmaxprod(isnan(BBBmaxprod)) = 0;
+essBBB = BBB(BBBmaxprod < -1*essThr*coef,:);
 end

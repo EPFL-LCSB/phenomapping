@@ -1,28 +1,28 @@
 % You can find here SOPs on how to deal with some issues that might arise during the IMM analysis
 
-%% if matlab crashes while generating the alternative IMMs:
+%% if matlab crashes while generating the alternative MILP solutions:
 % you dont need to regenerate all alternatives again 
 % you can recover the cut constraints from the DPs (saved in tmpresults) 
-% and the modelmilp (output from analysisIMM)
+% and the model with the milp formulation e.g. modelmilp (output from 
+% analysisIMM)
 if exist(strcat('tmpresults/',filename,'_DPs.mat'),'file') == 2
     DPr = load(strcat('tmpresults/',filename,'_DPs.mat'));
-    model4DP = recoverModel4DPIMM(modelmilp, DPr.DPs);
+    model4DP = recoverModel4DPMax(modelmilp, DPr.DPsimm);
 else
     fprintf('no DPs-matrix for IMM was found\n');
 end
 
-%% if you need to generate more alternative IMMs:
-% you need to call again the function findDPMinMets providing a high number
-% of alternatives (suggested NumAlt = 5000)
-% you should use here the model4DP from the previous generation of 
-% findDPMinMets - this will allow to integrate new cut constraints on the
-% top of the previous ones
-% to consider: for models with multiple nutrient possibilities 
-% (like parasites) and/or that are very relaxed, the number of alternative
-% IMMs can go up to 10000s
-[DPs, model4DP] = findDPMinMets(model4DP, NumAlt, modelmilp.indUSE, ...
-       time, filename);
+%% if you need to generate more alternative MILP solutions:
+% you need to call again the function findDPMax or findDPMin providing a 
+% high number of alternatives (suggested NumAlt = 5000)
+% you should use here the model from the previous generation of 
+% findDPMax or findDPMin - this will allow to integrate new cut constraints 
+% on the top of the previous ones
+% to consider: the number of MILP alternatives can go up to 1E5 - dont be
+% scared
+[DPsimm, model4DP2] = findDPMax(model4DP, NumAlt, modelmilp.indUSE, ...
+       time, 1, filename);
    
 % Note: the input and output notation of this script is consistent with
-% the notation of the Example_script_imm.m
+% the notation of the test_core_substrates.m
 

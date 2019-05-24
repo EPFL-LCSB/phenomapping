@@ -17,7 +17,7 @@ function [phenomapping_directory, thermo_data_directory] = ...
 %                           empty / provide manually* see note)
 %
 % OUTPUTS:
-%    texfba_directory:      Directory to the parent phenomapping folder
+%    phenomapping_directory:Directory to the parent phenomapping folder
 %    thermo_data_directory: Directory to the thermodynamic data within
 %                           matTFA
 %

@@ -52,7 +52,7 @@ end
 if isempty(minmax) && tagFBA
     minmax = runMinMax(model);
 elseif isempty(minmax) && ~tagFBA
-    minmax = runTMinMax(model,strcat('NF_',model.rxns),1);
+    minmax = runTMinMax(model,strcat('NF_',model.rxns));
 end
 minmax = round(minmax, precision);
 

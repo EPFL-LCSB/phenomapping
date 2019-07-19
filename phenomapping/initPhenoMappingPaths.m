@@ -63,8 +63,8 @@ addpath(genpath(texfba_directory));
 cd(phenomapping_directory)
 
 % PhenoMapping was developed to work with the solver CPLEX. We hence check 
-% that you have CPLEX installed. In future releases, this repository
-% will work with other solvers like gurobi.
+% that you have CPLEX installed and on the path. In future releases, 
+% this repository will work with other solvers like gurobi.
 cplex_directory = what('cplex');
 if isempty(cplex_directory)
     cplex_directory = [];

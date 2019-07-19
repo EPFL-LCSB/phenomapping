@@ -1,4 +1,27 @@
 %% Setting up the paths, solver and preparing the model for PhenoMapping
+% files to set up the paths and prepare the model for PhenoMapping have
+% been provided in the phenomapping/tests folder
+
+% prior to running phenomapping you should install matTFA.
+% TEX-FBA is also required should you want to integrate transcriptomics
+% data and identify potential regulation of gene expression between
+% isoenzymes
+
+% it is recommended that you remove any other file from the matlab path 
+% prior to starting phenomapping
+
+% OPTION A: add to the matlab path the required repositories and solver
+% directories
+% run the settings.m script
+
+% OPTION B: add to the matlab path the required repositories and solver
+% directories AND prepare the model for phenomapping analyses
+% run the settings_nameofmodel.m scripts
+
+% OPTION C: add manually to the matlab path the required repositories and
+% solver AND prepare the model for phenomapping analyses
+
+% Here is an example for option C:
 clear
 clc
 close all
@@ -20,10 +43,9 @@ thermo_data_directory = '/Users/Anush/GIT_Folders/matTFA/thermoDatabases/thermo_
 
 % providing the model
 modeldescription = 'iPbe';
-modelPath = 'models/pbe/tipbe2_liver.mat';
+modelPath = '/Users/Anush/GIT_Folders/phenomapping/models/tipbe4liver.mat';
 load(modelPath)
-model = tipbe_liver;
-
+model = tipbe;
 
 % path to save results
 pathToSave = 'tmpresults/';
@@ -34,41 +56,41 @@ pathToSave = 'tmpresults/';
 save(strcat(pathToSave,'inputPhenoMapping.mat'), 'model');
 
 %% PhenoMapping analysis for organism specific information in the GEM
-% Step 1: Map essentiality to enzymatic irreversibilities defined as adhoc 
-% in the model (if applicable):
-% cd('tutorials')
-% run('tutorial_b1_adhocirrev_phenomapping_workflow.m')
-
-
-% Step 2: Map essentiality to limitation in intracellular transportability
-% (if eukaryotic):
-% cd('tutorials')
-% run('tutorial_b2_inttransport_phenomapping_workflow.m')
-
-
-% Step 3: Map essentiality to localization of enzymes (if eukaryotic):
-% cd('tutorials')
-% run('tutorial_b3_enyloc_phenomapping_workflow.m')
-
-
-% Step 4: Map essentiality to biochemistry annotated to genome:
-% cd('tutorials')
-% run('tutorial_b4_biochem_phenomapping_workflow.m')
+% to be released in the coming months
 
 %% PhenoMapping analysis for condition specific information in the GEM
+% as applied for the analysis of iPbe and construction of iPb-liver and 
+% iPbe-blood 
+
+% Step 0: Get essentiality for the generic model. This should be a model
+% without any context-specific data or constraint integrated, e.g. iPbe
+% (files tipbe4blood.m or tipbe4liver.m, which only integrate pH and
+% membrane potentials for the blood- and liver-stages of the malaria
+% parasite infection such that the consequent phenomapping analyses are
+% thermodynamically consistent with the corresponding life stage).
+cd('tests')
+run('test_core_essentiality.m')
+
 % Step 1: Map essentiality to substrate availability following the 
 % PhenoMapping analysis for the medium:
-cd('tutorials')
-run('tutorial_c1_substrates_phenomapping_workflow.m')
+cd('tests')
+run('test_core_substrates.m')
 
 % Step 2: Map essentiality to metabolite concentrations following the 
 % PhenoMapping analysis for metabolomics (if available):
-cd('tutorials')
-run('tutorial_c2_metabolomics_phenomapping_workflow.m')
+cd('tests')
+run('test_core_metabolomics.m')
 
 % Step 3: Map essentiality to gene expression levels following the 
 % PhenoMapping analysis for transcriptomics (if available) considering or 
 % not regulation of gene expression between isoenzymes:
-cd('tutorials')
-run('tutorial_c3_transcriptomics_phenomapping_workflow.m')
+cd('tests')
+run('test_core_mattfa_minmax.m') % this is to perform TVA on the model
+% reaction fluxes as an optional input for TEX-FBA
+run('test_core_transcriptomics.m')
 
+%% Extract data stored in tmpresults
+% The files stores in mat structures in tmpresults can be extracted into
+% text or csv files for further analysis
+cd('tests')
+run('test_io.m')

@@ -5,10 +5,12 @@ You actually only need the following substructure:
 .
 └───ibm
     └───ILOG
-        └───CPLEX_Studio1271
+        └───CPLEX_Studio1281
             └───cplex
                 ├───bin
                 ├───include
                 ├───lib
                 └───matlab
-				
+
+Alternatively, you can install cplex anywhere else in your computer and add cplex to the 
+path or provide the path to cplex when running the "setting.m" file

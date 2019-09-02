@@ -25,16 +25,16 @@
 %%%%%%%%%%%%%%%%%%%%%%
 
 % inputs
-grRate = 0.05;          % optimal growth rate
-essThr = 0.1;           % essentiality threshold
-flagUpt = 1;            % true for analysis of IMM, false for analysis of IMS
+grRate = 0.05;          % optimal growth rate (this can be obtained optimizing for growth)
+essThr = 0.1;           % essentiality threshold (% of optimal growth to be defined, see minObj). If a knockout leads to grow below this threshold the gene will be considered essential for growth.
 minObj = essThr*grRate; % minimal required growth
-maxObj = 10;            % upper bound in growth (leave unconstrained)
-drainsForiMM = {};      % apply IMM in all drains
-metabData = [];         % no metabolomics data
-NumAlt = 1;             % 1 for test! suggested 5000; % number of alternatives
-time = [];              % time limit for optimization in seconds, if empty we do not set a time limit
-tagMin = 1;             % additional constrain to avoid generating suboptimal solutions
+flagUpt = 1;            % true for analysis of in silico minimal media (IMM). False for analysis of in silico minimal secretion (IMS)
+maxObj = 10;            % upper bound in growth (not applied here since 10 is much higher than the growth yield of any GEM)
+drainsForiMM = {};      % names of drains/exchanges used for IMM analysis. Empty means by default it will search for minimal media accross all drains/exchanges
+metabData = [];         % provide metabolomics data to integrate in this analysis. Empty if none.
+NumAlt = 1;             % number of alternative minimal media to find. We define 1 for you to test that the pipeline works. But it is suggested to define 5000 or more to make sure you identify all alternatives
+time = [];              % time limit for optimization in seconds. If empty we do not set a time limit
+tagMin = 1;             % additional constrain to avoid generating suboptimal solutions, meaning that if 1 we will not identify media that is not minimal 
 filename = strcat(modeldescription,'_PhenoMappingSubstrates');
 
 % IMM analysis

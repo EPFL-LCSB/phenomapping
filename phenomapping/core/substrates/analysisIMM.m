@@ -22,7 +22,7 @@ function [model, drains] = analysisIMM(model, flagUpt, minObj, ...
 %
 % OUTPUTS:
 %    model:           Model with MILP formulation for IMM analysis
-%    drains:          Drains used for the analysis
+%    drains:          Drains used for the IMM analysis
 %    modelpre:        Model ready for MILP formulation
 %
 % .. Author:

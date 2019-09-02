@@ -64,12 +64,10 @@ if isempty(indNF)
     model = addNetFluxVariables(model);
     indNF = getAllVar(model,{'NF'});
 end
-% if strcmp(method,'tMOMA')
-%     minmax = runMinMax(model,model.varNames(indNF));
-%     minmax =roundn(minmax,-9);
-%     model.var_lb(indNF) = minmax(:,1);
-%     model.var_ub(indNF) = minmax(:,2);
-% end
+% verify that indNF are correct
+if any(~ismember(model.rxns,strrep(model.varNames(indNF),'NF_','')))
+    error('indNF provided are wrong')
+end
 
 solWT = optimizeThermoModel(model); %adapt for minNorm
 grRateWT = solWT.val;
@@ -81,7 +79,7 @@ end
 % Identify reactions that do not carry a flux in solWT; none of these can be lethal
 % Identify J_z, the set of reactions that do not carry a flux in TFA
 solWTtfa = optimizeThermoModel(model,true);
-Jzrxns = model.rxns(solWTtfa.x(indNF)==0);
+Jzrxns = model.rxns(solWTtfa.x(indNF)<1E-8);
 
 grRateKO = ones(nDelRxns, 1)*grRateWT;
 hasEffect = true(nDelRxns, 1);

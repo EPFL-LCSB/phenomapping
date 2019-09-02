@@ -129,13 +129,6 @@ for i=1:length(model.rxns)
     indNF(i,1) = numVars+i;
 end
 
-% model.var_lb(indF) = 0;
-% model.var_ub(indF(model.var_ub(indF)>1e-9)) = 100;
-% model.var_ub(indF(model.var_ub(indF)<1e-9)) = 0;
-% model.var_lb(indR) = 0;
-% model.var_ub(indR(model.var_ub(indR)>1e-9)) = 100;
-% model.var_ub(indR(model.var_ub(indR)<1e-9)) = 0;
-
 numCons = size(model.A,1);
 % create the prevent simultaneous use constraints
 % FU_rxn + BU_rxn =< 1

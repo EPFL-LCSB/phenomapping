@@ -10,18 +10,22 @@
 % it is recommended that you remove any other file from the matlab path 
 % prior to starting phenomapping
 
-% OPTION A: add to the matlab path the required repositories and solver
-% directories
-% run the settings.m script
+% OPTION A: add the required repositories and solver directories to the 
+% matlab path in an automatic fashion, meaning that phenomapping will 
+% automatically search for matTFA and TEX-FBA in the parent folder and if 
+% these are not there you will be asked to provide the paths. 
+% For this option run the "settings.m" script
 
-% OPTION B: add to the matlab path the required repositories and solver
-% directories AND prepare the model for phenomapping analyses
-% run the settings_nameofmodel.m scripts
+% OPTION B: add the required repositories and solver directories to the 
+% matlab path (same as A) AND prepare the model for phenomapping analyses 
+% - also done in an automatic fashion. 
+% For this option run the "settings_nameofmodel.m" script
 
-% OPTION C: add manually to the matlab path the required repositories and
-% solver AND prepare the model for phenomapping analyses
+% OPTION C: add manually the required repositories and solver paths to the 
+% matlab path AND prepare the model for phenomapping analyses. For this
+% option you can follow the backbone of the code presented below. 
+% Please, note that since option C is manual, you should adapt the paths
 
-% Here is an example for option C:
 clear
 clc
 close all
@@ -55,19 +59,19 @@ pathToSave = 'tmpresults/';
 
 save(strcat(pathToSave,'inputPhenoMapping.mat'), 'model');
 
-%% PhenoMapping analysis for organism specific information in the GEM
-% to be released in the coming months
-
 %% PhenoMapping analysis for condition specific information in the GEM
-% as applied for the analysis of iPbe and construction of iPb-liver and 
+% as applied for the analysis of iPbe and construction of iPbe-liver and 
 % iPbe-blood 
 
-% Step 0: Get essentiality for the generic model. This should be a model
-% without any context-specific data or constraint integrated, e.g. iPbe
-% (files tipbe4blood.m or tipbe4liver.m, which only integrate pH and
-% membrane potentials for the blood- and liver-stages of the malaria
-% parasite infection such that the consequent phenomapping analyses are
-% thermodynamically consistent with the corresponding life stage).
+% Step 0: Get essentiality for the non-stage specific or generic model. 
+% This should be a model without context-specific data integrated. 
+% iPbe is an example of such a generic model. 
+% iPbe is saved in the files tipbe4blood.m and tipbe4liver.m. Both versions
+% are stoichiometrically identical. They differ in the thermodynamic data
+% integrated, i.e., they integrate pH and membrane potentials for the blood- 
+% and liver-stages of the malaria infection. This allows that the 
+% consequent phenomapping analyses are thermodynamically consistent with
+% the corresponding life stage.
 cd('tests')
 run('test_core_essentiality.m')
 
@@ -90,7 +94,7 @@ run('test_core_mattfa_minmax.m') % this is to perform TVA on the model
 run('test_core_transcriptomics.m')
 
 %% Extract data stored in tmpresults
-% The files stores in mat structures in tmpresults can be extracted into
-% text or csv files for further analysis
+% The files stores in mat structures in tmpresults can be read an the 
+% information extracted into text or csv files for further manual analysis
 cd('tests')
 run('test_io.m')

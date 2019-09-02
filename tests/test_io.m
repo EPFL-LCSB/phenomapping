@@ -19,6 +19,7 @@
 % this_file_directory = mfilename('fullpath');
 % run(strrep(this_file_directory,'test_io','settings.m'))
 
+% tag here what type of results you want to save from the tmpresults folder
 tag_save_substrates = 1;
 tag_save_substrates_joint = 1;
 tag_save_secretions = 0;
@@ -77,7 +78,7 @@ if tag_save_secretions
     filename = strcat(modeldescription,'_PhenoMappingSecretions');
     r1 = load(strcat(saving_directory,filename,'.mat'));
     
-    % Extract info about composition of the IMMs
+    % Extract info about composition of the IMSs
     [immOutput.StatsMets, immOutput.Mets, immOutput.drainClass, ...
         immOutput.statsClass] = extractInfoIMMDPs(r1.modelmilp, r1.DPsimm, ...
         r1.modelmilp.indUSE);
@@ -90,7 +91,7 @@ if tag_save_secretions
         'Classification based on IMS', 'Appearance in IMS'}, ...
         '%s\t%s\t%s\t%s\t%s');
     
-    % Extract info: substrates linked to essentiality of the IMMs
+    % Extract info: substrates linked to essentiality of the IMSs
     exportPhenoMappingInfo(r1.essIMMaddToIRM, r1.subsToGenes, 'IMS', ...
         phenotypes_directory, phenotypes_description,...
         strcat(saving_directory,filename,'_ess2sub4ims'));
@@ -132,7 +133,7 @@ if tag_save_transcriptomics
     filename = strcat(modeldescription,'_PhenoMappingTranscriptomics');
     r3 = load(strcat(saving_directory,filename,'.mat'));
     
-    % Extract info: metabolite concentrations linked to essentiality
+    % Extract info: rxn levels linked to essentiality
     exportPhenoMappingInfo(r3.addEssGenesExp, r3.botRxnLevels, 'Rxn Levels',...
         phenotypes_directory, phenotypes_description, ...
         strcat(saving_directory,filename));

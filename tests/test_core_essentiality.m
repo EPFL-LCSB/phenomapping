@@ -28,8 +28,8 @@
 % (normally in rich medium and without any data integrated)
 
 % inputs
-grRate = 0.05;          % optimal growth rate
-essThr = 0.1;           % essentiality threshold
+grRate = 0.05;          % optimal growth rate (this should be obtained optimizing for growth)
+essThr = 0.1;           % essentiality threshold (% of optimal growth to be defined). If a knockout leads to grow below this threshold the gene will be considered essential for growth.
 filename = strcat(modeldescription,'_PhenoMappingEssentiality');
 
 % analysis

@@ -26,19 +26,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % inputs
-grRate = 0.05;          % optimal growth rate
-essThr = 0.1;           % essentiality threshold
+grRate = 0.05;          % optimal growth rate (this can be obtained optimizing for growth)
+essThr = 0.1;           % essentiality threshold (% of optimal growth to be defined, see minObj). If a knockout leads to grow below this threshold the gene will be considered essential for growth.
 minObj = essThr*grRate; % minimal required growth
-lowPvalue = 25;
-highPvalue = 75;
-percent_l = 2E-3;
-percent_h = 2E-5;
-NumAlt = 100;             % 1 for test! suggested 5000; % number of alternatives
-selectAlt = [];         % expression profile that we desire to fix, empty just requires MCS
+NumAlt = 1;             % number of alternative minimal media to find. We define 1 for you to test that the pipeline works. But it is suggested to define 5000 or more to make sure you identify all alternatives
+lowPvalue = 25;         % percentile to assign lowly expressend genes
+highPvalue = 75;        % percentile to assign highly expressend genes
+percent_l = 2E-3;       % determines upper bound on fluxes associated to lowly expressed genes
+percent_h = 2E-5;       % determines lower bound on fluxes associated to highly expressed genes
+selectAlt = [];         % expression profile that we desire to fix, empty just requires maximum consistency score (MCS)
 flagPlot = 1;           % true to see plot of gene expression levels
-geneKO = {};            % 
-rxnLevelOUT = model.rxns(indRxnBlock);
-indInt = [];
+geneKO = {};            % provide gene ids to knock out
+rxnLevelOUT = model.rxns(indRxnBlock); % rxn ids that we should no consider for the TEX-FBA analyses. Here we disregard the blocked reactions based on the minmax.
+indInt = [];            % indexes of UP and DOWN rxns (once TEX-FBA constraints are integrated) among which we want to identify bottleneck reactions. Empty means we will go with the default option: looking among all TEX-FBA reaction constraints.
 filename = strcat(modeldescription,'_PhenoMappingTranscriptomics');
 
 

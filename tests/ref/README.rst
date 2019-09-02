@@ -20,7 +20,11 @@ Genes. Cell, 170(2), 260-272.e8.
 
 2) Phenotypes liver stages Plasmodium berghei (pbe_phenotypes_liver_Jul18.mat):
 
-****LINK****
+Stanway R. R., Bushell E., Chiappino-Pepe A., Roques M., Sanderson T., Franke-Fayard B.,
+Caldelari R., Golomingi M., Nyonda M., Pandey V., Schwach F., Chevalley S., Ramesar J.,
+Metcalf T., Herd C., Burda P. C., Rayner J. C., Soldati-Favre D., Janse C., Hatzimanikatis
+V., Billker O., Heussler V. T, (2019). Genome Scale Identification of Essential Metabolic 
+Processes for Targeting the Plasmodium Liver Stage. XXX (details on reference to be updated).
 
 3) Transcriptomic blood stages Plasmodium berghei (levelGenes_pbe_blood_Troph_mean_24h.mat)
 

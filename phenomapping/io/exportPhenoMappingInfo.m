@@ -1,7 +1,7 @@
-function exportPhenoMappingInfo(essGenes,conditionToGene,conditionDesc,pathToPhenoData,phenDesc,filename)
+function exportPhenoMappingInfo(essGenes,conditionToGene,conditionDesc,pathToPhenoData,phenDesc,filename,extension,tagPhenotype)
 % Exports output of PhenoMapping (linkEssGeneIMM2Subs.m, getBotNeckMets)
-% to cvs and links genes essential at the conditions with available 
-% phenotypes
+% to text or cvs files and links genes essential at the conditions with 
+% available phenotypes
 % 
 %
 % USAGE:
@@ -30,10 +30,13 @@ function exportPhenoMappingInfo(essGenes,conditionToGene,conditionDesc,pathToPhe
 %                     csv by default. But the path where the file will be
 %                     saved should be provided else it will be saved in the
 %                     folder where you currently are.
+%    extension:       Text (txt) or csv (csv) file (default = 'txt')
+%    tagPhenotype:    True to map phenotype (default)
+%                     
 %
 % OUTPUTS:
-%    cvs:             Saved in phenomapping/tmpresults. You can open the  
-%                     cvs in excel and separate Text to columns with Tab
+%    cvs/text:        Saved in phenomapping/tmpresults. You can open the  
+%                     file in excel and separate Text to columns with Tab
 %                     as a delimiter.
 %
 % .. Author:
@@ -43,14 +46,20 @@ function exportPhenoMappingInfo(essGenes,conditionToGene,conditionDesc,pathToPhe
 if (nargin < 3) || isempty(conditionDesc)
     conditionDesc = {'condition in PhenoMapping'};
 end
-if (nargin < 4)
+if (nargin < 4) || strcmp(pathToPhenoData,'')
     pathToPhenoData = [];
 end
-if (nargin < 5) || isempty(phenDesc)
+if (nargin < 5) || isempty(phenDesc) || strcmp(phenDesc,'')
     phenDesc = pathToPhenoData;
 end
 if (nargin < 6) || isempty(filename)
     filename = 'PhenoMappingCondition2Genes';
+end
+if (nargin < 7) || isempty(extension)
+    extension = 'txt';
+end
+if (nargin < 8) || isempty(tagPhenotype)
+    tagPhenotype = 1;
 end
 
 % converting characters to cells to avoid issues
@@ -98,19 +107,24 @@ for i = 1:size(conditionToGene,1)
                 end
             end
         end
-        if ~isempty(pathToPhenoData)
-            phen = [];
-            for j = 1:length(pathToPhenoData)
-                tmp = getPhenotype(essGenes{i},'','',pathToPhenoData{j});
-                phen = [phen, tmp(:,2)];
+        if tagPhenotype
+            if ~isempty(pathToPhenoData)
+                phen = [];
+                for j = 1:length(pathToPhenoData)
+                    tmp = getPhenotype(essGenes{i},'','',pathToPhenoData{j});
+                    phen = [phen, tmp(:,2)];
+                end
+            else
+                phenDesc = {'phenotype'};
+                tmp = getPhenotype(essGenes{i},'','',[]);
+                phen = tmp(:,2);
             end
+            data = [data; [strcat(conditionDesc,{' '},num2str(i)),phenDesc, ...
+                heading]; essGenes{i},phen,conditionToGene{i}];
         else
-            phenDesc = {'phenotype'};
-            tmp = getPhenotype(essGenes{i},'','',[]);
-            phen = tmp(:,2);
+            data = [data; [strcat(conditionDesc,{' '},num2str(i)), ...
+                heading]; essGenes{i},conditionToGene{i}];
         end
-        data = [data; [strcat(conditionDesc,{' '},num2str(i)),phenDesc, ...
-            heading]; essGenes{i},phen,conditionToGene{i}];
     end
 end
 
@@ -120,4 +134,4 @@ for i = 2:size(data,2)
     desc = strcat(desc,'%s\t');
 end
 
-writeData(strcat(filename,'.txt'),data,desc);
+writeData(strcat(filename,'.',extension),data,desc);

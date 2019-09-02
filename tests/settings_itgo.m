@@ -13,10 +13,9 @@
 clear
 clc
 
-% Define a directory where we want to save final resutls (.mat and .csv) -
-% if it does not exist it will be created (for this command to work you
-% need to run this script / do not copy and paste!
-% saving_directory = 'tmpresults/';
+% Define a directory where we want to save final resutls (.mat and .csv/
+% .txt) - if the directory does not exist it will be created automatically
+% Note: run this script (do not copy and paste in the command window)
 saving_directory = strrep(mfilename('fullpath'),...
     'tests/settings_itgo','tmpresults/');
 
@@ -27,7 +26,7 @@ addpath(genpath(strrep(mfilename('fullpath'),...
 [phenomapping_directory, thermo_data_directory] = initPhenoMappingPaths(...
     saving_directory);
 
-% Load test model: ipbe (tfa structure)
+% Load test model: itgo (tfa structure)
 model = load(strcat(phenomapping_directory,'/models/itgo.mat'));
 model = model.itgo;
 modeldescription = 'iTgo';

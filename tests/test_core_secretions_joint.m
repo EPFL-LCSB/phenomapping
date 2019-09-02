@@ -25,13 +25,12 @@
 %%%%%%%%%%%%%%%%%%%%%%
 
 % inputs
-grRate = 0.05;          % optimal growth rate
-essThr = 0.1;           % essentiality threshold
-flagUpt = 0;            % true for analysis of IMM, false for analysis of IMS
+grRate = 0.05;          % optimal growth rate (this can be obtained optimizing for growth)
+essThr = 0.1;           % essentiality threshold (% of optimal growth to be defined, see minObj). If a knockout leads to grow below this threshold the gene will be considered essential for growth.
 minObj = essThr*grRate; % minimal required growth
-NumAlt = 20;            % 20 for test! suggested 5000; % number of alternatives
-time = [];              % time limit for optimization in seconds, if empty we do not set a time limit
-
+flagUpt = 0;            % true for analysis of in silico minimal media (IMM). False for analysis of in silico minimal secretion (IMS)
+NumAlt = 20;            % number of alternative minimal media to find. We define 20 for you to test that the pipeline works. But it is suggested to define 5000 or more to make sure you identify all alternatives
+time = [];              % time limit for optimization in seconds. If empty we do not set a time limit
 filename = strcat(modeldescription,'_PhenoMappingSecretionsJoint');
 
 % Get essentiality at the joint IMM and link it to the substrates missing 

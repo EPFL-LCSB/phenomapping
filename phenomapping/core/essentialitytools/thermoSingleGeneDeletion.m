@@ -63,6 +63,10 @@ if (nargin < 8)
         indNF = getAllVar(model,{'NF'});
     end
 end
+% verify that indNF are correct
+if any(~ismember(model.rxns,strrep(model.varNames(indNF),'NF_','')))
+    error('indNF provided are wrong')
+end
 
 solWT = optimizeThermoModel(model);
 grRateWT = solWT.val;
@@ -143,7 +147,7 @@ else
     % Identify J_z, the set of reactions that do not carry a flux in TFA
     % minnorm; none of these can be lethal
     solWTtfa = optimizeThermoModel(model,true);
-    Jzrxns = model.rxns(solWTtfa.x(indNF)==0);
+    Jzrxns = model.rxns(solWTtfa.x(indNF)<1E-8);
     
     grRateKO = ones(nDelGenes,1)*grRateWT;
     hasEffect = true(nDelGenes,1);

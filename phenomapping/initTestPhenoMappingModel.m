@@ -11,7 +11,6 @@ function [model, checkList, tagReady] = initTestPhenoMappingModel(modeli, ...
 %    model:           model with FBA/TFA structure
 %
 % OPTIONAL INPUTS:
-%    cplexPath:       Path to CPLEX (default = empty / to provide manually)
 %    ReactionDBpath:  Path to database with all the thermodynamic 
 %                     information from Alberty (default = empty / to
 %                     provide manually)

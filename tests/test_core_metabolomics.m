@@ -25,12 +25,11 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%
 
 % inputs
-grRate = 0.05;          % optimal growth rate
-essThr = 0.1;           % essentiality threshold
+grRate = 0.05;          % optimal growth rate (this can be obtained optimizing for growth)
+essThr = 0.1;           % essentiality threshold (% of optimal growth to be defined, see minObj). If a knockout leads to grow below this threshold the gene will be considered essential for growth.
 minObj = essThr*grRate; % minimal required growth
-NumAlt = 500;           % number of alternatives
-time = [];              % time limit for optimization in seconds, if empty we do not set a time limit
-tagMax = 0;             % additional constrain to avoid generating suboptimal solutions
+NumAlt = 500;           % number of alternative minimal media to find. It is suggested to define a big number like 500.
+tagMax = 0;             % additional constrain to avoid generating suboptimal solutions, meaning that if 1 we will not identify metabolite sets that is not maximal.
 filename = strcat(modeldescription,'_PhenoMappingMetabolomics');
 
 % Integrate metabolomics data

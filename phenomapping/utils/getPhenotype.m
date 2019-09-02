@@ -17,8 +17,12 @@ function phenotype = getPhenotype(listGenes,lifeStage,PlasmoSpecie,pathToData)
 %    pathToData:      Cell array with path(s) to phenotype(s) for a life
 %                     stage of the organism of study (default = empty / get
 %                     data for P. berghei blood and liver stages saved in
-%                     phenomapping/data/pbe). NOTE: new phenotypes should
-%                     be saved in a cell called "phenotypes".
+%                     phenomapping/data/pbe). NOTE: phenotypes should
+%                     be saved in a cell called "phenotypes" with two 
+%                     columns: first for gene ids and second for
+%                     phenotypes.
+%                     See format of "pbe_phenotypes_blood_Nov16.mat" in
+%                     tests/ref/pbe/.
 %
 % OUTPUTS:
 %    phenotype:       Phenotypes extracted for the list of genes provided
@@ -35,7 +39,6 @@ end
 if (nargin < 4)
     pathToData = [];
 end
-
 if ischar(listGenes)
     listGenes = {listGenes};
 end

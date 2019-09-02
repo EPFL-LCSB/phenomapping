@@ -1,4 +1,25 @@
 function allTasksImpact = extractTasksImpact(impactTasks, geneList)
+% Analyze output from checkBBBTasks
+%
+% USAGE:
+%
+%       [union, common, notCommon, num] = getOverlapSets(data1, data2)
+%
+% INPUTS:
+%    data1:           Data set 1 - row
+%
+% OPTIONAL INPUTS:
+%    data2:           Data set 2 - row (default = empty)
+%
+% OUTPUTS:
+%    common:          data common between data sets 1 and 2
+%    notCommon:       data differing between data sets 1 and 2
+%    union:           joint data 1 and 2 at each cell (row)
+%    num:             length of each cell (row)
+%
+% .. Author:
+% Anush Chiappino 2015
+% 
 
 if (nargin < 2)
     geneList = {'infesible model'};

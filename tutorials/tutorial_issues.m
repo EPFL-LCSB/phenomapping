@@ -13,6 +13,9 @@
 % saved in the subfolder "tmpresults", and the model with the milp  
 % formulation, e.g. modelmilp (output from analysisIMM). See below an
 % example
+%
+% - Call then the function "recoverModel4DPMax.m" as suggested
+% below
 
 if exist(strcat('tmpresults/',filename,'_DPs.mat'),'file') == 2
     DPr = load(strcat('tmpresults/',filename,'_DPs.mat'));
@@ -21,11 +24,11 @@ else
     fprintf('no DPs-matrix for IMM was found\n');
 end
 
-% - Call then the function "recoverModel4DPMax.m" as suggested
-% below
+% - Call again the function "findDPMax.m" and input the model with 
+% restored cut constraints to generate additional solutions as follows:
 
 [DPsimm, model4DP2] = findDPMax(model4DP, NumAlt, modelmilp.indUSE, ...
-       time, 1, filename);
+       time, tagMin, strcat(saving_directory,filename));
    
 % Note: the input and output notation provided here is consistent with
 % the notation of the test_core_substrates.m

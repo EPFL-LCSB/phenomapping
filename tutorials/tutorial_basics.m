@@ -7,6 +7,8 @@
 % data and identify potential regulation of gene expression between
 % isoenzymes
 
+% Work from the parent phenomapping folder.
+
 % it is recommended that you remove any other file from the matlab path 
 % prior to starting phenomapping
 
@@ -14,50 +16,88 @@
 % matlab path in an automatic fashion, meaning that phenomapping will 
 % automatically search for matTFA and TEX-FBA in the parent folder and if 
 % these are not there you will be asked to provide the paths. 
-% For this option run the "settings.m" script
+% For this option run the "settings.m" script.
+% You should work from the parent phenomapping folder to run "settings.m"
 
 % OPTION B: add the required repositories and solver directories to the 
 % matlab path (same as A) AND prepare the model for phenomapping analyses 
 % - also done in an automatic fashion. 
 % For this option run the "settings_nameofmodel.m" script
+% You should work from the parent phenomapping folder to run 
+% "settings_nameofmodel.m"
 
 % OPTION C: add manually the required repositories and solver paths to the 
 % matlab path AND prepare the model for phenomapping analyses. For this
 % option you can follow the backbone of the code presented below. 
 % Please, note that since option C is manual, you should adapt the paths
+% You should work from the parent phenomapping folder to run 
+% "initTestPhenoMappingModel.m"
 
 clear
 clc
 close all
 
-% adding phenomapping and dependent repositories to the path
-cplex_directory = '/Users/Anush/Applications/IBM/ILOG/CPLEX_Studio1271'; % provide path to cplex
-phenomapping_directory = '/Users/Anush/GIT_Folders/phenomapping'; %provide path to phenomapping repository
-mattfa_directory = '/Users/Anush/GIT_Folders/matTFA'; % provide path to matTFA repository
-texfba_directory = '/Users/Anush/GIT_Folders/texfba'; % provide path to TEXFBA repository
+
+% Provide path to folder where your results will be saved - please, keep 
+% the name "tmpresults" for this folder.
+% initPhenoMappingPaths will create the "tmpresults" folder at the same 
+% level as ext, models, phenomapping, tests, and tutorials subfolders.
+% Ideally you will provide here the full path to the saving directory.
+% Something like:
+saving_directory = '/Users/Anush/GIT_Folders/phenomapping/tmpresults/';
+% Alternatively, if you work from the parent phenomapping folder you can
+% define:
+% saving_directory = 'tmpresults/';
+
+
+% See in the comment below an example of the paths to phenomapping, matTFA
+% and TEX-FBA repositories and CPLEX
+phenomapping_directory = '/Users/Anush/GIT_Folders/phenomapping';
+% mattfa_directory = '/Users/Anush/GIT_Folders/matTFA';
+% texfba_directory = '/Users/Anush/GIT_Folders/texfba';
+% cplex_directory = '/Users/Anush/Applications/IBM/ILOG/CPLEX_Studio1271';
 
 addpath(genpath(phenomapping_directory));
-addpath(genpath(mattfa_directory));
-addpath(genpath(texfba_directory));
-cd(phenomapping_directory) % work from first folder of phenomapping as the starting path
 
-% providing information for TFA studies
+% Call the function "initPhenoMappingPaths.m" to add all other required 
+% paths
+[phenomapping_directory, thermo_data_directory] = initPhenoMappingPaths(...
+    saving_directory);
+
+% NOTE that matTFA and TEX-FBA are in the same directory as phenomapping.
+% This will be assumed by default in the "initPhenoMappingPaths.m".
+% If this is not the case you will have to provide the path to matTFA and 
+% TEX-FBA when you are asked to do so by "initPhenoMappingPaths.m".
+
+% You will also need to paste the path to cplex when the following message
+% appears:
+% "Please provide your cplex path and press enter"
+% You will paste the corresponding path as follows (without " "):
+% ... /Users/Anush/Applications/IBM/ILOG/CPLEX_Studio1271
+
+
+% Work from parent folder of phenomapping as the starting path. If you are
+% not there run the following command:
+% cd(phenomapping_directory)
+
+
+% Tag true to apply phenomapping with TFA (thermodynamic constraints will
+% be taken into account)
 tagThermo = 1;
-thermo_data_directory = '/Users/Anush/GIT_Folders/matTFA/thermoDatabases/thermo_data.mat';
 
-% providing the model
+% Upload model - here iPbe for liver-stage analysis provided in the
+% subfolder models as test case
 modeldescription = 'iPbe';
 modelPath = '/Users/Anush/GIT_Folders/phenomapping/models/tipbe4liver.mat';
 load(modelPath)
 model = tipbe;
 
-% path to save results
-pathToSave = 'tmpresults/';
+% Prepare model for phenomapping
+[model, checkList, tagReady] = initTestPhenoMappingModel(model,...
+    thermo_data_directory,tagThermo);
 
-% preparing model for phenomapping
-[model, checkList, tagReady] = initTestPhenoMappingModel(model,thermo_data_directory,tagThermo);
-
-save(strcat(pathToSave,'inputPhenoMapping.mat'), 'model');
+% Save prepared model
+save(strcat(saving_directory,'inputPhenoMapping.mat'), 'model');
 
 %% PhenoMapping analysis for condition specific information in the GEM
 % as applied for the analysis of iPbe and construction of iPbe-liver and 

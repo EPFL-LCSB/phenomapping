@@ -55,7 +55,7 @@ model = tipbe;
 pathToSave = 'tmpresults/';
 
 % preparing model for phenomapping
-[model, checkList, tagReady] = initTestPhenoMappingModel(model,cplex_directory,thermo_data_directory);
+[model, checkList, tagReady] = initTestPhenoMappingModel(model,thermo_data_directory,tagThermo);
 
 save(strcat(pathToSave,'inputPhenoMapping.mat'), 'model');
 

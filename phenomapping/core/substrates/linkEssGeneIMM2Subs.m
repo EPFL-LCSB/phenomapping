@@ -142,7 +142,7 @@ for z = 1:size(MatrixInfo,2)
             % the IMM of study!
             modelKO.f(intUSE) = 1;
             modelKO.objtype = -1; %minimize:1, maximize:-1 (just for verification!)
-            cDPs = findDPMax(modelKO, NumAlt, intUSE, time, 0, filename); % optimize!
+            cDPs = findDPMax(modelKO, NumAlt, intUSE, time, 0, strcat(filename,'_linkEssGeneIMM2Subs')); % optimize!
             
             if (isempty(cDPs))
                 subsToGenes{z,1}{j,1} = 'problem: should be essential in the wtmodel';

@@ -24,7 +24,7 @@ else
     % we consider the following descriptions to assign compartments to mets:
     % _compartmentID or [compartmentID] or (compartmentID) at the end of the
     % mets field in the model
-    symbols = {'_','[','('};
+    symbols = {'_',']',')'};
     
     % get three last characters of model.mets field
     metCompTag = cell(length(model.mets),1);

@@ -39,7 +39,7 @@ sol = solveTFAmodelCplex(tModel,time);
 
 if tagParTFA
     model4tagParTFA = tModel;
-    model4tagParTFA.var_lb(model4tagParTFA.f==1) = sol.val;
+    model4tagParTFA.var_lb(model4tagParTFA.f==1) = sol.val*0.95;
     FRidx = getAllVar(model4tagParTFA,{'F','R'});
     f = zeros(numel(model4tagParTFA.f),1);
     f(FRidx) = 1;

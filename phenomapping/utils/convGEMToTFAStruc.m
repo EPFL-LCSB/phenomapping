@@ -21,7 +21,7 @@ allRxnsRev = 1;
 % if all reversible parameter is indicated then we assume all reactions are reversible first except biomass
 % and create the Irrev version of the model
 if (allRxnsRev)
-    model.rev = ones(length(model.rev),1);
+    model.rev = ones(length(model.rxns),1);
 end
 
 % value for the bigM in big M constraints such as:

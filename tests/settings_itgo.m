@@ -43,12 +43,8 @@ phenotypes_directory = which('itgo_tachy_phenotypes.mat');
 metabolomics_description = {'metabolomics blood pfa'};
 metabolomics_directory = which('allmetab_pfa_blood.mat');
 
-transcriptomics_description = {'transcriptomics tachyzoites',...
-    'transcriptomics bradyzoites'};
-transcriptomics_directory{1} = which(...
-    'itgo_tachy_levelGenes.mat');
-transcriptomics_directory{2} = which(...
-    'itgo_brady_levelGenes.mat');
+transcriptomics_description = {'transcriptomics tachyzoites'};
+transcriptomics_directory = which('itgo_tachy_levelGenes.mat');
 
 filename = strcat(modeldescription,'_PhenoMappingSettings');
 save(strcat(saving_directory,filename,'.mat'));

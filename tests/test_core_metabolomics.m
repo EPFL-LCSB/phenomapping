@@ -30,6 +30,7 @@ essThr = 0.1;           % essentiality threshold (% of optimal growth to be defi
 minObj = essThr*grRate; % minimal required growth
 NumAlt = 500;           % number of alternative minimal media to find. It is suggested to define a big number like 500.
 tagMax = 0;             % additional constrain to avoid generating suboptimal solutions, meaning that if 1 we will not identify metabolite sets that is not maximal.
+time = 60;              % time constraint if it doesnt converge in seconds
 filename = strcat(modeldescription,'_PhenoMappingMetabolomics');
 
 % Integrate metabolomics data

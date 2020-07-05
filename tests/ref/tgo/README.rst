@@ -1,4 +1,4 @@
-High-throughput data: phenotypic, transcriptomic, and metabolomic data used for the 
+High-throughput data: phenotypic and transcriptomic data used for the 
 analysis of iTgo
 ==========================================================================================
 

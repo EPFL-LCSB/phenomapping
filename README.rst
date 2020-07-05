@@ -92,3 +92,11 @@ References
 Please cite the following reference for the PhenoMapping package:
 
 Stanway R. R., Bushell E., Chiappino-Pepe A., Roques M., Sanderson T., Franke-Fayard B., Caldelari R., Golomingi M., Nyonda M., Pandey V., Schwach F., Chevalley S., Ramesar J., Metcalf T., Herd C., Burda P. C., Rayner J. C., Soldati-Favre D., Janse C., Hatzimanikatis V., Billker O., Heussler V. T, Cell (2019). Genome-Scale Identification of Essential Metabolic Processes for Targeting the Plasmodium Liver Stage. https://doi.org/10.1016/j.cell.2019.10.030.
+
+
+
+Also used in
+============
+
+Krishnan A., Kloehn J., Lunghi M., Chiappino-Pepe A., Waldman B.S., Nicolas D., Varesio E., Hehl A., Lourido S., Hatzimanikatis V., Soldati-Favre S., (2020). Functional and Computational Genomics Reveal Unprecedented Flexibility in Stage-Specific Toxoplasma Metabolism. Cell Host & Microbe 27(2), 290-306.e11. https://doi.org/10.1016/j.chom.2020.01.002
+

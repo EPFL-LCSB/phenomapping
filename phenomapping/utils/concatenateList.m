@@ -24,6 +24,10 @@ if (nargin < 2)
     separator = strcat(',',{' '});
 end
 
+if ischar(list)
+    list = {list};
+end
+
 for j = 1:length(list)
     if isempty(conCell)
         conCell = list{j};

@@ -21,11 +21,11 @@
 
 % tag here what type of results you want to save from the tmpresults folder
 tag_save_substrates = 1;
-tag_save_substrates_joint = 1;
+tag_save_substrates_joint = 0;
 tag_save_secretions = 0;
 tag_save_secretions_joint = 0;
-tag_save_metabolomics = 0;
-tag_save_transcriptomics = 0;
+tag_save_metabolomics = 1;
+tag_save_transcriptomics = 1;
 
 if ~exist('modeldescription','var') || ~exist('saving_directory','var')
     [modeldescription, saving_directory] = retrievePaths([], []);

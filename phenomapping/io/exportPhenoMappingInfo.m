@@ -46,10 +46,10 @@ function exportPhenoMappingInfo(essGenes,conditionToGene,conditionDesc,pathToPhe
 if (nargin < 3) || isempty(conditionDesc)
     conditionDesc = {'condition in PhenoMapping'};
 end
-if (nargin < 4) || strcmp(pathToPhenoData,'')
+if (nargin < 4) || all(strcmp(pathToPhenoData,''))
     pathToPhenoData = [];
 end
-if (nargin < 5) || isempty(phenDesc) || strcmp(phenDesc,'')
+if (nargin < 5) || all(isempty(phenDesc)) || all(strcmp(phenDesc,''))
     phenDesc = pathToPhenoData;
 end
 if (nargin < 6) || isempty(filename)

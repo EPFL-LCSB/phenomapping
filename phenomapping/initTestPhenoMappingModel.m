@@ -109,6 +109,8 @@ if flagChange || tagConv
         if isnan(sol.val) || isempty(sol.val) || sol.val<1E-3
             warning('the model is not thermodynamically feasible: we took out the thermo constraints. To work with thermo, please, investigate the reactions that make your model infeasible with the matTFA repository')
             model = convGEMToTFAStruc(model);
+        else
+            model = modelt;
         end
     else
         model = convGEMToTFAStruc(model);

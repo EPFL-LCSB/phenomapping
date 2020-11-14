@@ -77,7 +77,7 @@ Description of files in this repository
 
 Please, let us know if you have any suggestion, comment, or problem. We will be happy to discuss and help.
 
-Contact: Prof. Vassily Hatzimanikatis (vassily.hatzimanikatis@epfl.ch)
+Contact: Dr. Anush Chiappino-Pepe (anush.chiappinopepe@alumni.epfl.ch)
 
 
 
